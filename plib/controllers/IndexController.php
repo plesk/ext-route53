@@ -11,8 +11,8 @@ class IndexController extends pm_Controller_Action
         }
     }
 
-	public function indexAction()
-	{
+    public function indexAction()
+    {
         $this->view->pageTitle = 'AWS API Authorization';
 
         $form = new pm_Form_Simple();
@@ -53,5 +53,5 @@ class IndexController extends pm_Controller_Action
         }
 
         $this->view->form = $form;
-	}
+    }
 }
