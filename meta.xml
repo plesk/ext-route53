@@ -2,7 +2,7 @@
 <module>
   <id>route53</id>
   <name>Amazon Route 53</name>
-  <description>Integration with Amazon Route 53</description>
+  <description>Integration with Amazon Route 53. It is a highly available and scalable Domain Name System (DNS) web service.</description>
   <version>1.0</version>
   <release>1</release>
   <vendor>Parallels, Inc.</vendor>
