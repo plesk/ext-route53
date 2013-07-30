@@ -13,11 +13,11 @@ class IndexController extends pm_Controller_Action
 
     public function indexAction()
     {
-        $this->view->pageTitle = 'AWS API Authorization';
+        $this->view->pageTitle = $this->lmsg('indexPageTitle');
 
         $form = new pm_Form_Simple();
         $form->addElement('text', 'key', array(
-            'label' => 'Key',
+            'label' => $this->lmsg('keyLabel'),
             'value' => pm_Settings::get('key'),
             'class' => 'f-middle-size',
             'required' => true,
@@ -26,7 +26,7 @@ class IndexController extends pm_Controller_Action
             ),
         ));
         $form->addElement('text', 'secret', array(
-            'label' => 'Secret',
+            'label' => $this->lmsg('secretLabel'),
             'value' => pm_Settings::get('secret'),
             'class' => 'f-middle-size',
             'required' => true,
@@ -35,7 +35,7 @@ class IndexController extends pm_Controller_Action
             ),
         ));
         $form->addElement('checkbox', 'enabled', array(
-            'label' => 'Enable Amazon Web Service Route 53',
+            'label' => $this->lmsg('enabledLabel'),
             'value' => pm_Settings::get('enabled'),
         ));
 
@@ -48,7 +48,7 @@ class IndexController extends pm_Controller_Action
             pm_Settings::set('secret', $form->getValue('secret'));
             pm_Settings::set('enabled', $form->getValue('enabled'));
 
-            $this->_status->addMessage('info', 'Data was successfully saved.');
+            $this->_status->addMessage('info', $this->lmsg('authDataSaved'));
             $this->_helper->json(array('redirect' => pm_Context::getBaseUrl()));
         }
 
