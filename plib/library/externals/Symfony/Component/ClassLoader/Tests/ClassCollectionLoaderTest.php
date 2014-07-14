@@ -13,10 +13,10 @@ namespace Symfony\Component\ClassLoader\Tests;
 
 use Symfony\Component\ClassLoader\ClassCollectionLoader;
 
-require_once __DIR__ . '/Fixtures/ClassesWithParents/GInterface.php';
-require_once __DIR__ . '/Fixtures/ClassesWithParents/CInterface.php';
-require_once __DIR__ . '/Fixtures/ClassesWithParents/B.php';
-require_once __DIR__ . '/Fixtures/ClassesWithParents/A.php';
+require_once __DIR__.'/Fixtures/ClassesWithParents/GInterface.php';
+require_once __DIR__.'/Fixtures/ClassesWithParents/CInterface.php';
+require_once __DIR__.'/Fixtures/ClassesWithParents/B.php';
+require_once __DIR__.'/Fixtures/ClassesWithParents/A.php';
 
 class ClassCollectionLoaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +28,7 @@ class ClassCollectionLoaderTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        require_once __DIR__ . '/Fixtures/deps/traits.php';
+        require_once __DIR__.'/Fixtures/deps/traits.php';
 
         $r = new \ReflectionClass('Symfony\Component\ClassLoader\ClassCollectionLoader');
         $m = $r->getMethod('getOrderedClasses');
@@ -106,11 +106,11 @@ class ClassCollectionLoaderTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        require_once __DIR__ . '/Fixtures/ClassesWithParents/ATrait.php';
-        require_once __DIR__ . '/Fixtures/ClassesWithParents/BTrait.php';
-        require_once __DIR__ . '/Fixtures/ClassesWithParents/CTrait.php';
-        require_once __DIR__ . '/Fixtures/ClassesWithParents/D.php';
-        require_once __DIR__ . '/Fixtures/ClassesWithParents/E.php';
+        require_once __DIR__.'/Fixtures/ClassesWithParents/ATrait.php';
+        require_once __DIR__.'/Fixtures/ClassesWithParents/BTrait.php';
+        require_once __DIR__.'/Fixtures/ClassesWithParents/CTrait.php';
+        require_once __DIR__.'/Fixtures/ClassesWithParents/D.php';
+        require_once __DIR__.'/Fixtures/ClassesWithParents/E.php';
 
         $expected = array(
             'ClassesWithParents\\GInterface',
@@ -189,7 +189,7 @@ class ClassCollectionLoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testUnableToLoadClassException()
     {

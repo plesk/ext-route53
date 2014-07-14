@@ -21,6 +21,7 @@ use Aws\Common\Credentials\Credentials;
 use Aws\Common\Credentials\CredentialsInterface;
 use Aws\Common\Enum\ClientOptions as Options;
 use Aws\Common\Exception\InvalidArgumentException;
+use Aws\Common\Exception\TransferException;
 use Aws\Common\Signature\EndpointSignatureInterface;
 use Aws\Common\Signature\SignatureInterface;
 use Aws\Common\Signature\SignatureListener;
@@ -29,6 +30,7 @@ use Aws\Common\Waiter\CompositeWaiterFactory;
 use Aws\Common\Waiter\WaiterFactoryInterface;
 use Aws\Common\Waiter\WaiterConfigFactory;
 use Guzzle\Common\Collection;
+use Guzzle\Http\Exception\CurlException;
 use Guzzle\Service\Client;
 use Guzzle\Service\Description\ServiceDescriptionInterface;
 
@@ -82,7 +84,9 @@ abstract class AbstractClient extends Client implements AwsClientInterface
 
         // Add the event listener so that requests are signed before they are sent
         $dispatcher = $this->getEventDispatcher();
-        $dispatcher->addSubscriber(new SignatureListener($credentials, $signature));
+        if (!$config->get('signature.ignore')) {
+            $dispatcher->addSubscriber(new SignatureListener($credentials, $signature));
+        }
 
         if ($backoff = $config->get(Options::BACKOFF)) {
             $dispatcher->addSubscriber($backoff, -255);
@@ -256,7 +260,8 @@ abstract class AbstractClient extends Client implements AwsClientInterface
                 new WaiterClassFactory(substr($clientClass, 0, strrpos($clientClass, '\\')) . '\\Waiter')
             ));
             if ($this->getDescription()) {
-                $this->waiterFactory->addFactory(new WaiterConfigFactory($this->getDescription()->getData('waiters')));
+                $waiterConfig = $this->getDescription()->getData('waiters') ?: array();
+                $this->waiterFactory->addFactory(new WaiterConfigFactory($waiterConfig));
             }
         }
 
@@ -269,5 +274,23 @@ abstract class AbstractClient extends Client implements AwsClientInterface
     public function getApiVersion()
     {
         return $this->serviceDescription->getApiVersion();
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws \Aws\Common\Exception\TransferException
+     */
+    public function send($requests)
+    {
+        try {
+            return parent::send($requests);
+        } catch (CurlException $e) {
+            $wrapped = new TransferException($e->getMessage(), null, $e);
+            $wrapped->setCurlHandle($e->getCurlHandle())
+                ->setCurlInfo($e->getCurlInfo())
+                ->setError($e->getError(), $e->getErrorNo())
+                ->setRequest($e->getRequest());
+            throw $wrapped;
+        }
     }
 }
