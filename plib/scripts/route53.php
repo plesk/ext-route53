@@ -12,7 +12,7 @@ pm_Context::init('route53');
  * AWS PHP SDK
  * http://aws.amazon.com/sdkforphp/
  */
-require_once __DIR__ . '/../library/aws-autoloader.php';
+require_once __DIR__ . '/../library/externals/aws-autoloader.php';
 
 if (!pm_Settings::get('enabled')) {
     exit(0);
