@@ -1,5 +1,5 @@
 <?php
-
+// Copyright 1999-2014. Parallels IP Holdings GmbH. All Rights Reserved.
 class Modules_Route53_Form_Settings extends pm_Form_Simple
 {
     public function init()
