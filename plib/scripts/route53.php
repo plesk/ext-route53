@@ -9,12 +9,6 @@
 pm_Loader::registerAutoload();
 pm_Context::init('route53');
 
-/**
- * AWS PHP SDK
- * http://aws.amazon.com/sdkforphp/
- */
-require_once __DIR__ . '/../library/externals/aws-autoloader.php';
-
 if (!pm_Settings::get('enabled')) {
     exit(0);
 }
@@ -23,14 +17,6 @@ if (!pm_Settings::get('enabled')) {
  * Integration config
  */
 $config = array(
-    /**
-     * AWS API Authorization
-     * https://portal.aws.amazon.com/ MyAccount -> Security Credentials
-     */
-    'client' => array(
-        'key' => pm_Settings::get('key'),
-        'secret' => pm_Settings::get('secret'),
-    ),
     /**
      * Resource Records TTL
      */
@@ -69,32 +55,7 @@ $config = array(
 /**
  * Create AWS Route 53 client
  */
-$client = \Aws\Route53\Route53Client::factory($config['client']);
-
-/**
- * Get Route53 zone id by zone name
- *
- * @param \Aws\Route53\Route53Client $client
- * @param string $zoneName
- * @return string|null
- */
-function getModelZoneId(\Aws\Route53\Route53Client $client, $zoneName)
-{
-    static $zones = null;
-    if (null === $zones) {
-        $zones = array();
-        $model = $client->listHostedZones();
-        foreach ($model['HostedZones'] as $zone) {
-            $zones[$zone['Name']] = $zone['Id'];
-        }
-    }
-
-    if (!array_key_exists($zoneName, $zones)) {
-        return null;
-    }
-
-    return $zones[$zoneName];
-}
+$client = Modules_Route53_Client::factory();
 
 /**
  * Read zone script from stdin
@@ -160,7 +121,7 @@ foreach ($data as $record) {
          */
         case 'create':
         case 'update':
-            $zoneId = getModelZoneId($client, $record->zone->name);
+            $zoneId = $client->getZoneId($record->zone->name);
 
             $changes = array();
             if (!$zoneId) {
@@ -264,7 +225,7 @@ foreach ($data as $record) {
             break;
 
         case 'delete':
-            $zoneId = getModelZoneId($client, $record->zone->name);
+            $zoneId = $client->getZoneId($record->zone->name);
 
             if (!$zoneId) {
                 continue;
