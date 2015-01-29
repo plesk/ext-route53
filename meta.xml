@@ -5,8 +5,7 @@
   <name>Amazon Route 53</name>
   <description>This extension provides the functionality needed for integration with Amazon Route 53. It is a highly available and scalable Domain Name System (DNS) web service.</description>
   <version>1.2</version>
-  <release>1</release>
+  <release>2</release>
   <vendor>Parallels</vendor>
-  <plesk_min_version>11.5.30</plesk_min_version>
-  <os>unix</os>
+  <plesk_min_version>12.0.18</plesk_min_version>
 </module>
