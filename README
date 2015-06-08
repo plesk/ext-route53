@@ -1,0 +1,6 @@
+Amazon Route 53 Integration
+
+This extension provides the functionality needed for integration with Amazon Route 53. It is a highly available and scalable Domain Name System (DNS) web service.
+
+The following techniques are demonstrated:
+* Integration with third-party DNS.
