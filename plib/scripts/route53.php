@@ -191,7 +191,15 @@ foreach ($data as $record) {
                         ),
                     );
                 }
-                $opt = $rr->opt ? "{$rr->opt} " : '';
+
+                if ('MX' == $rr->type && 0 == $rr->opt) {
+                    $opt = "1 ";
+                } elseif ($rr->opt) {
+                    $opt = "{$rr->opt} ";
+                } else {
+                    $opt = '';
+                }
+
                 if ('TXT' == $rr->type) {
                     /**
                      * AWS Route 53 requires quotation of the TXT Resource Record value
