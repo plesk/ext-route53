@@ -192,8 +192,9 @@ foreach ($data as $record) {
                     );
                 }
 
-                if ('MX' == $rr->type && 0 == $rr->opt) {
-                    $opt = "1 ";
+                if ("0" === $rr->opt) {
+                    // Workaround cast zero to boolean false
+                    $opt = "0 ";
                 } elseif ($rr->opt) {
                     $opt = "{$rr->opt} ";
                 } else {
