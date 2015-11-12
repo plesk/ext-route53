@@ -38,7 +38,8 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
     {
         if ($data['enabled']) {
             try {
-                $this->_checkApiConfig(['key' => $data['key'], 'secret' => $data['secret']]);
+                Modules_Route53_Client::factory(['key' => $data['key'], 'secret' => $data['secret']])
+                    ->checkCredentials();
             } catch (Exception $e) {
                 $this->markAsError();
                 $this->getElement('key')->addError($e->getMessage());
@@ -51,20 +52,6 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         }
 
         return parent::isValid($data);
-    }
-
-    private function _checkApiConfig($config)
-    {
-        $errorReporting = error_reporting(0);
-        try {
-            require_once __DIR__ . '/../externals/aws-autoloader.php';
-            $client = \Aws\Route53\Route53Client::factory($config);
-            $client->listHostedZones();
-        } catch (Exception $e) {
-            error_reporting($errorReporting);
-            throw $e;
-        }
-        error_reporting($errorReporting);
     }
 
     public function process()

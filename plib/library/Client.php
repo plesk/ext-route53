@@ -45,6 +45,18 @@ class Modules_Route53_Client
         return call_user_func_array(array($this->_client, $method), $args);
     }
 
+    public function checkCredentials()
+    {
+        $errorReporting = error_reporting(0);
+        try {
+            $this->_client->listHostedZones();
+        } catch (Exception $e) {
+            error_reporting($errorReporting);
+            throw $e;
+        }
+        error_reporting($errorReporting);
+    }
+
     /**
      * Get Route53 zone id by zone name
      *
@@ -54,7 +66,11 @@ class Modules_Route53_Client
     public function getZoneId($zoneName)
     {
         if (null === $this->_zones) {
-            $this->_zones = $this->_getZones();
+            $this->_zones = array();
+            $model = $this->_client->listHostedZones();
+            foreach ($model['HostedZones'] as $zone) {
+                $this->_zones[$zone['Name']] = $zone['Id'];
+            }
         }
 
         if (!array_key_exists($zoneName, $this->_zones)) {
@@ -62,20 +78,6 @@ class Modules_Route53_Client
         }
 
         return $this->_zones[$zoneName];
-    }
-
-    private function _getZones()
-    {
-        $zones = array();
-        $opts = array(/* 'MaxItems' => 2 */);
-        do {
-            $model = $this->_client->listHostedZones($opts);
-            foreach ($model['HostedZones'] as $zone) {
-                $zones[$zone['Name']] = $zone['Id'];
-            }
-            $opts['Marker'] = $model['NextMarker'];
-        } while ($model['IsTruncated']);
-        return $zones;
     }
 
     public function createHostedZone(array $args = array())
