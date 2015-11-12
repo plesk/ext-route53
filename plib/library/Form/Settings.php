@@ -6,6 +6,13 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
     {
         parent::init();
 
+        $this->addElement('description', 'description', [
+             'description' => $this->lmsg('getAuth') . ' : ' .
+                '<a href="https://portal.aws.amazon.com/" target="_blank">portal.aws.amazon.com</a>' .
+                '-&gt; MyAccount -&gt; Security Credentials',
+             'escape' => false,
+        ]);
+
         $this->addElement('text', 'key', array(
             'label' => $this->lmsg('keyLabel'),
             'value' => pm_Settings::get('key'),
