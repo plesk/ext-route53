@@ -7,4 +7,5 @@ $messages = array(
     'enabledLabel' => 'Turn on Amazon Web Service Route 53',
     'authDataSaved' => 'The authorization data was saved.',
     'getAuth' => 'Get It Here',
+    'invalidCredentials' => 'Authentication failed with specified credentials.',
 );

@@ -3,31 +3,73 @@
 
 /**
  * AWS PHP SDK
- * http://aws.amazon.com/sdkforphp/
+ * @link http://aws.amazon.com/sdk-for-php/
  */
 require_once(__DIR__ . '/externals/aws-autoloader.php');
 
 /**
  * Class Modules_Route53_Client
  *
- * @method Guzzle\Service\Resource\Model changeResourceRecordSets(array $args = array())
- * @method Guzzle\Service\Resource\Model changeTagsForResource(array $args = array())
- * @method Guzzle\Service\Resource\Model createHealthCheck(array $args = array())
- * @method Guzzle\Service\Resource\Model deleteHealthCheck(array $args = array())
- * @method Guzzle\Service\Resource\Model getChange(array $args = array())
- * @method Guzzle\Service\Resource\Model getCheckerIpRanges(array $args = array())
- * @method Guzzle\Service\Resource\Model getHealthCheck(array $args = array())
- * @method Guzzle\Service\Resource\Model getHealthCheckCount(array $args = array())
- * @method Guzzle\Service\Resource\Model getHostedZone(array $args = array())
- * @method Guzzle\Service\Resource\Model listHealthChecks(array $args = array())
- * @method Guzzle\Service\Resource\Model listHostedZones(array $args = array())
- * @method Guzzle\Service\Resource\Model listResourceRecordSets(array $args = array())
- * @method Guzzle\Service\Resource\Model listTagsForResource(array $args = array())
- * @method Guzzle\Service\Resource\Model listTagsForResources(array $args = array())
- * @method Guzzle\Service\Resource\Model updateHealthCheck(array $args = array())
- * @method Guzzle\Service\Resource\ResourceIteratorInterface getListHealthChecksIterator(array $args = array())
- * @method Guzzle\Service\Resource\ResourceIteratorInterface getListHostedZonesIterator(array $args = array())
- * @method Guzzle\Service\Resource\ResourceIteratorInterface getListResourceRecordSetsIterator(array $args = array())
+ * @method \Aws\Result associateVPCWithHostedZone(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise associateVPCWithHostedZoneAsync(array $args = [])
+ * @method \Aws\Result changeResourceRecordSets(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise changeResourceRecordSetsAsync(array $args = [])
+ * @method \Aws\Result changeTagsForResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise changeTagsForResourceAsync(array $args = [])
+ * @method \Aws\Result createHealthCheck(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createHealthCheckAsync(array $args = [])
+ * @method \Aws\Result createHostedZone(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createHostedZoneAsync(array $args = [])
+ * @method \Aws\Result createReusableDelegationSet(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createReusableDelegationSetAsync(array $args = [])
+ * @method \Aws\Result deleteHealthCheck(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteHealthCheckAsync(array $args = [])
+ * @method \Aws\Result deleteHostedZone(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteHostedZoneAsync(array $args = [])
+ * @method \Aws\Result deleteReusableDelegationSet(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteReusableDelegationSetAsync(array $args = [])
+ * @method \Aws\Result disassociateVPCFromHostedZone(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise disassociateVPCFromHostedZoneAsync(array $args = [])
+ * @method \Aws\Result getChange(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getChangeAsync(array $args = [])
+ * @method \Aws\Result getCheckerIpRanges(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getCheckerIpRangesAsync(array $args = [])
+ * @method \Aws\Result getGeoLocation(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getGeoLocationAsync(array $args = [])
+ * @method \Aws\Result getHealthCheck(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getHealthCheckAsync(array $args = [])
+ * @method \Aws\Result getHealthCheckCount(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getHealthCheckCountAsync(array $args = [])
+ * @method \Aws\Result getHealthCheckLastFailureReason(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getHealthCheckLastFailureReasonAsync(array $args = [])
+ * @method \Aws\Result getHealthCheckStatus(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getHealthCheckStatusAsync(array $args = [])
+ * @method \Aws\Result getHostedZone(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getHostedZoneAsync(array $args = [])
+ * @method \Aws\Result getHostedZoneCount(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getHostedZoneCountAsync(array $args = [])
+ * @method \Aws\Result getReusableDelegationSet(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getReusableDelegationSetAsync(array $args = [])
+ * @method \Aws\Result listGeoLocations(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listGeoLocationsAsync(array $args = [])
+ * @method \Aws\Result listHealthChecks(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listHealthChecksAsync(array $args = [])
+ * @method \Aws\Result listHostedZones(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listHostedZonesAsync(array $args = [])
+ * @method \Aws\Result listHostedZonesByName(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listHostedZonesByNameAsync(array $args = [])
+ * @method \Aws\Result listResourceRecordSets(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listResourceRecordSetsAsync(array $args = [])
+ * @method \Aws\Result listReusableDelegationSets(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listReusableDelegationSetsAsync(array $args = [])
+ * @method \Aws\Result listTagsForResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listTagsForResourceAsync(array $args = [])
+ * @method \Aws\Result listTagsForResources(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listTagsForResourcesAsync(array $args = [])
+ * @method \Aws\Result updateHealthCheck(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateHealthCheckAsync(array $args = [])
+ * @method \Aws\Result updateHostedZoneComment(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateHostedZoneCommentAsync(array $args = [])
  */
 class Modules_Route53_Client
 {
@@ -50,6 +92,12 @@ class Modules_Route53_Client
         $errorReporting = error_reporting(0);
         try {
             $this->_client->listHostedZones();
+        } catch (Aws\Route53\Exception\Route53Exception $e) {
+            error_reporting($errorReporting);
+            if ('InvalidClientTokenId' == $e->getAwsErrorCode()) {
+                throw new pm_Exception(pm_Locale::lmsg('invalidCredentials'));
+            }
+            throw $e;
         } catch (Exception $e) {
             error_reporting($errorReporting);
             throw $e;
@@ -101,9 +149,13 @@ class Modules_Route53_Client
     public static function factory($config = array())
     {
         $config = array_merge(array(
-            'key' => pm_Settings::get('key'),
-            'secret' => pm_Settings::get('secret'),
+            'credentials' => array(
+                'key' => pm_Settings::get('key'),
+                'secret' => pm_Settings::get('secret'),
+            ),
+            'version' => '2013-04-01',
+            'region' => 'us-east-1',
         ), $config);
-        return new self(\Aws\Route53\Route53Client::factory($config));
+        return new self(new \Aws\Route53\Route53Client($config));
     }
 }

@@ -38,8 +38,12 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
     {
         if ($data['enabled']) {
             try {
-                Modules_Route53_Client::factory(['key' => $data['key'], 'secret' => $data['secret']])
-                    ->checkCredentials();
+                Modules_Route53_Client::factory([
+                    'credentials' => [
+                        'key' => $data['key'],
+                        'secret' => $data['secret'],
+                    ],
+                ])->checkCredentials();
             } catch (Exception $e) {
                 $this->markAsError();
                 $this->getElement('key')->addError($e->getMessage());
