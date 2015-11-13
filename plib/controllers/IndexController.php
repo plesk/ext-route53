@@ -46,16 +46,18 @@ class IndexController extends pm_Controller_Action
     public function delegationSetAction()
     {
         $data = [];
-        $delegationsSets = Modules_Route53_Client::factory()->listReusableDelegationSets();
-        // TODO check NextMarker
-        foreach ($delegationsSets['DelegationSets'] as $delegationsSet) {
-            $delegationsSetId = urlencode($delegationsSet['Id']);
+        foreach (Modules_Route53_Client::factory()->getDelegationSets() as $delegationsSetId => $nameServers) {
+            $urlId = urlencode($delegationsSetId);
+            $isDefault = $delegationsSetId == pm_Settings::get('delegationSet');
             $data[] = [
-                'nameServers' => implode("<br>", $delegationsSet['NameServers']),
+                'nameServers' => implode("<br>", $nameServers),
                 'actions' => implode("<br>", [
-                    // TODO use as default
+                    $isDefault ? "<b>" . $this->lmsg('defaultDelegationSet') . "</b>"
+                        : "<a href='" . $this->_helper->url('default-delegation-set') . "/id/$urlId'>" .
+                            $this->lmsg('defaultDelegationSetButton') .
+                        "</a>",
                     // TODO recreate all zones
-                    "<a href='" . $this->_helper->url('delete-delegation-set') . "/id/$delegationsSetId'>" .
+                    "<a href='" . $this->_helper->url('delete-delegation-set') . "/id/$urlId'>" .
                         $this->lmsg('deleteDelegationSetButton') .
                     "</a>",
                 ]),
@@ -79,6 +81,11 @@ class IndexController extends pm_Controller_Action
             'description' => $this->lmsg('createDelegationSetHint'),
             'action' => 'create-delegation-set',
             'class' => 'sb-item-add',
+        ], [
+            'title' => $this->lmsg('resetDefaultDelegationSetButton'),
+            'description' => $this->lmsg('resetDefaultDelegationSetHint'),
+            'action' => 'default-delegation-set',
+            'class' => 'sb-reset',
         ]]);
 
         $this->view->list = $list;
@@ -114,6 +121,13 @@ class IndexController extends pm_Controller_Action
         } catch (Exception $e) {
             $this->_status->addMessage('error', $e->getMessage());
         }
+        $this->_redirect('index/delegation-set');
+    }
+
+    public function defaultDelegationSetAction()
+    {
+        pm_Settings::set('delegationSet', $this->_getParam('id'));
+        $this->_status->addMessage('info', $this->lmsg('defaultDelegationSetChanged'));
         $this->_redirect('index/delegation-set');
     }
 }

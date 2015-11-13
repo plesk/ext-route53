@@ -12,6 +12,8 @@ $messages = array(
     'invalidCredentials' => 'Authentication failed with specified credentials.',
     'createDelegationSetButton' => 'Create Delegation Set',
     'createDelegationSetHint' => 'Creates a delegation set (a group of four name servers) that can be reused by multiple hosted zones.',
+    'resetDefaultDelegationSetButton' => 'Reset Default',
+    'resetDefaultDelegationSetHint' => 'Do not reuse any delegation set by new hosted zones.',
     'delegationSetCreated' => 'Reusable delegation set was created.',
     'nameServersColumn' => 'Name Servers',
     'actionsColumn' => 'Actions',
@@ -20,4 +22,7 @@ $messages = array(
     'hostedZoneSelect' => 'Use the delegation set for an existing hosted zone as reusable',
     'hostedZoneNone' => 'None',
     'delegationSetDeleted' => 'Reusable delegation set was deleted.',
+    'defaultDelegationSet' => 'Default Delegation Set',
+    'defaultDelegationSetButton' => 'Make Delegation Set Default',
+    'defaultDelegationSetChanged' => 'Default reusable delegation set was changed.'
 );

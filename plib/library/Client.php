@@ -138,8 +138,26 @@ class Modules_Route53_Client
         return $zones;
     }
 
+    public function getDelegationSets()
+    {
+        $delegationSets = [];
+        $opts = [/* 'MaxItems' => 2 */];
+        do {
+            $model = $this->_client->listReusableDelegationSets($opts);
+            foreach ($model['DelegationSets'] as $delegationsSet) {
+                $delegationSets[$delegationsSet['Id']] = $delegationsSet['NameServers'];
+            }
+            $opts['Marker'] = $model['NextMarker'];
+        } while ($model['IsTruncated']);
+        return $delegationSets;
+    }
+
     public function createHostedZone(array $args = array())
     {
+        if ($delegationSetId = pm_Settings::get('delegationSet')) {
+            // Workaround for Route53Client::cleanId
+            $args['DelegationSetId'] = str_replace('/delegationset/', '', $delegationSetId);
+        }
         $model = $this->_client->createHostedZone($args);
         $this->_zones[$model['HostedZone']['Name']] = $model['HostedZone']['Id'];
         return $model;
