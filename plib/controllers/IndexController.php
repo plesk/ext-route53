@@ -85,7 +85,7 @@ class IndexController extends pm_Controller_Action
             'title' => $this->lmsg('resetDefaultDelegationSetButton'),
             'description' => $this->lmsg('resetDefaultDelegationSetHint'),
             'action' => 'default-delegation-set',
-            'class' => 'sb-reset',
+            'class' => 'sb-revert',
         ]]);
 
         $this->view->list = $list;
