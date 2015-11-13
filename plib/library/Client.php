@@ -114,7 +114,7 @@ class Modules_Route53_Client
     public function getZoneId($zoneName)
     {
         if (null === $this->_zones) {
-            $this->_zones = $this->_getZones();
+            $this->_zones = $this->getZones();
         }
 
         if (!array_key_exists($zoneName, $this->_zones)) {
@@ -124,7 +124,7 @@ class Modules_Route53_Client
         return $this->_zones[$zoneName];
     }
 
-    private function _getZones()
+    public function getZones()
     {
         $zones = array();
         $opts = array(/* 'MaxItems' => 2 */);

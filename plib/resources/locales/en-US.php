@@ -14,4 +14,10 @@ $messages = array(
     'createDelegationSetHint' => 'Creates a delegation set (a group of four name servers) that can be reused by multiple hosted zones.',
     'delegationSetCreated' => 'Reusable delegation set was created.',
     'nameServersColumn' => 'Name Servers',
+    'actionsColumn' => 'Actions',
+    'deleteDelegationSetButton' => 'Delete Delegation Set',
+    'whiteLabel' => 'Learn more about white label name servers.',
+    'hostedZoneSelect' => 'Use the delegation set for an existing hosted zone as reusable',
+    'hostedZoneNone' => 'None',
+    'delegationSetDeleted' => 'Reusable delegation set was deleted.',
 );

@@ -49,15 +49,28 @@ class IndexController extends pm_Controller_Action
         $delegationsSets = Modules_Route53_Client::factory()->listReusableDelegationSets();
         // TODO check NextMarker
         foreach ($delegationsSets['DelegationSets'] as $delegationsSet) {
+            $delegationsSetId = urlencode($delegationsSet['Id']);
             $data[] = [
-                'ns' => implode("\n", $delegationsSet['NameServers']),
+                'nameServers' => implode("<br>", $delegationsSet['NameServers']),
+                'actions' => implode("<br>", [
+                    // TODO use as default
+                    // TODO recreate all zones
+                    "<a href='" . $this->_helper->url('delete-delegation-set') . "/id/$delegationsSetId'>" .
+                        $this->lmsg('deleteDelegationSetButton') .
+                    "</a>",
+                ]),
             ];
         }
 
-        $list = new pm_View_List_Simple($this->view, $this->_request);
+        $list = new pm_View_List_Simple($this->view, $this->getRequest());
         $list->setColumns([
-            'ns' => [
+            'nameServers' => [
                 'title' => $this->lmsg('nameServersColumn'),
+                'noEscape' => true,
+            ],
+            'actions' => [
+                'title' => $this->lmsg('actionsColumn'),
+                'noEscape' => true,
             ],
         ]);
         $list->setData($data);
@@ -74,12 +87,33 @@ class IndexController extends pm_Controller_Action
 
     public function createDelegationSetAction()
     {
-        $delegationSet = [
-            'CallerReference' => uniqid(),
-        ];
-        Modules_Route53_Client::factory()->createReusableDelegationSet($delegationSet);
+        $form = new Modules_Route53_Form_DelegationSet();
 
-        $this->_status->addMessage('info', $this->lmsg('delegationSetCreated'));
+        if ($this->getRequest()->isPost() && $form->isValid($this->getRequest()->getPost())) {
+            try {
+                $form->process();
+                $this->_status->addMessage('info', $this->lmsg('delegationSetCreated'));
+            } catch (Exception $e) {
+                $this->_status->addMessage('error', $e->getMessage());
+            }
+            $this->_helper->json(array('redirect' => $this->_helper->url('delegation-set')));
+        }
+
+        $this->view->pageTitle = $this->lmsg('createDelegationSetButton');
+        $this->view->form = $form;
+    }
+
+    public function deleteDelegationSetAction()
+    {
+        $delegationSet = [
+            'Id' => $this->_getParam('id'),
+        ];
+        try {
+            Modules_Route53_Client::factory()->deleteReusableDelegationSet($delegationSet);
+            $this->_status->addMessage('info', $this->lmsg('delegationSetDeleted'));
+        } catch (Exception $e) {
+            $this->_status->addMessage('error', $e->getMessage());
+        }
         $this->_redirect('index/delegation-set');
     }
 }
