@@ -32,6 +32,9 @@ class Modules_Route53_Form_DelegationSet extends pm_Form_Simple
         if ('none' != $this->getValue('hostedZone')) {
             $delegationSet['HostedZoneId'] = $this->getValue('hostedZone');
         }
-        Modules_Route53_Client::factory()->createReusableDelegationSet($delegationSet);
+        $model = Modules_Route53_Client::factory()->createReusableDelegationSet($delegationSet);
+        if (!pm_Settings::get('delegationSet')) {
+            pm_Settings::set('delegationSet', $model['DelegationSet']['Id']);
+        }
     }
 }

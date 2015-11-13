@@ -117,6 +117,9 @@ class IndexController extends pm_Controller_Action
         ];
         try {
             Modules_Route53_Client::factory()->deleteReusableDelegationSet($delegationSet);
+            if ($delegationSet['Id'] == pm_Settings::get('delegationSet')) {
+                pm_Settings::set('delegationSet', null);
+            }
             $this->_status->addMessage('info', $this->lmsg('delegationSetDeleted'));
         } catch (Exception $e) {
             $this->_status->addMessage('error', $e->getMessage());
