@@ -113,7 +113,7 @@ $data = json_decode(file_get_contents('php://stdin'));
 //    {"command": "createPTRs", "ptr": {"ip_address": "2002:5bcc:18fd:000c:0001:0002:0003:0004", "hostname": "domain.tld"}}
 //]
 
-$errors = [];
+$log = new Modules_Route53_Logger();
 foreach ($data as $record) {
 
     switch ($record->command) {
@@ -132,7 +132,7 @@ foreach ($data as $record) {
                  */
 
                 if (!$config['createHostedZone']) {
-                    echo("Skip zone {$record->zone->name}: createHostedZone not allowed in script.\n");
+                    $log->warn("Skip zone {$record->zone->name}: createHostedZone not allowed in script.");
                     continue;
                 }
 
@@ -146,12 +146,11 @@ foreach ($data as $record) {
                         // TODO implement some workaround
                     }
 
-                    echo("Failed zone creation {$record->zone->name}: {$e->getMessage()}\n");
-                    $errors[] = $e;
+                    $log->err("Failed zone creation {$record->zone->name}: {$e->getMessage()}");
                     continue;
                 }
 
-                echo("Zone created: {$record->zone->name}\n");
+                $log->info("Zone created: {$record->zone->name}\n");
 
                 $zoneId = $model['HostedZone']['Id'];
 
@@ -225,7 +224,7 @@ foreach ($data as $record) {
             }
 
             if (!$config['changeResourceRecordSets']) {
-                echo("Skip zone {$record->zone->name}: changeResourceRecordSets not allowed in script.\n");
+                $log->warn("Skip zone {$record->zone->name}: changeResourceRecordSets not allowed in script.\n");
                 continue;
             }
 
@@ -240,12 +239,11 @@ foreach ($data as $record) {
                     ),
                 ));
             } catch (Modules_Route53_Exception $e) {
-                echo("Failed zone update {$record->zone->name}: {$e->getMessage()}\n");
-                $errors[] = $e;
+                $log->err("Failed zone update {$record->zone->name}: {$e->getMessage()}\n");
                 continue;
             }
 
-            echo("ResourceRecordSet updated: {$record->zone->name}\n");
+            $log->info("ResourceRecordSet updated: {$record->zone->name}\n");
 
             break;
 
@@ -281,14 +279,13 @@ foreach ($data as $record) {
                         ),
                     ));
                 } catch (Modules_Route53_Exception $e) {
-                    echo("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
-                    $errors[] = $e;
+                    $log->err("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
                     continue;
                 }
             }
 
             if (!$config['deleteHostedZone']) {
-                echo("Skip zone {$record->zone->name}: deleteHostedZone not allowed in script.\n");
+                $log->warn("Skip zone {$record->zone->name}: deleteHostedZone not allowed in script.\n");
                 continue;
             }
 
@@ -297,13 +294,15 @@ foreach ($data as $record) {
                     'Id' => $zoneId,
                 ));
             } catch (Modules_Route53_Exception $e) {
-                echo("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
-                $errors[] = $e;
+                $log->err("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
                 continue;
             }
 
-            echo("Zone deleted: {$record->zone->name}\n");
+            $log->info("Zone deleted: {$record->zone->name}\n");
             break;
     }
 }
-exit(empty($errors) ? 0 : 255);
+
+if ($log->hasErrors()) {
+    exit(255);
+}

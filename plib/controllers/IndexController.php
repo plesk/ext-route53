@@ -141,6 +141,10 @@ class IndexController extends pm_Controller_Action
 
     public function toolsAction()
     {
+        foreach (Modules_Route53_Logger::getErrorMessages() as $message) {
+            $this->_status->addError($message);
+        }
+
         $this->view->tools = [
             [
                 'icon' => '/theme/icons/32/plesk/refresh.png',
