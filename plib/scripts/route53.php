@@ -232,12 +232,14 @@ foreach ($data as $record) {
              * Apply zone modification
              */
             try {
-                $model = $client->changeResourceRecordSets(array(
-                    'HostedZoneId' => $zoneId,
-                    'ChangeBatch' => array(
-                        'Changes' => $changes,
-                    ),
-                ));
+                if ($changes) {
+                    $client->changeResourceRecordSets(array(
+                        'HostedZoneId' => $zoneId,
+                        'ChangeBatch'  => array(
+                            'Changes' => $changes,
+                        ),
+                    ));
+                }
             } catch (Modules_Route53_Exception $e) {
                 $log->err("Failed zone update {$record->zone->name}: {$e->getMessage()}\n");
                 continue;
@@ -272,12 +274,14 @@ foreach ($data as $record) {
                 }
 
                 try {
-                    $model = $client->changeResourceRecordSets(array(
-                        'HostedZoneId' => $zoneId,
-                        'ChangeBatch'  => array(
-                            'Changes' => $changes,
-                        ),
-                    ));
+                    if ($changes) {
+                        $client->changeResourceRecordSets(array(
+                            'HostedZoneId' => $zoneId,
+                            'ChangeBatch'  => array(
+                                'Changes' => $changes,
+                            ),
+                        ));
+                    }
                 } catch (Modules_Route53_Exception $e) {
                     $log->err("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
                     continue;

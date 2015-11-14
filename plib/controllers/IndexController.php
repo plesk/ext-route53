@@ -195,12 +195,14 @@ class IndexController extends pm_Controller_Action
                     'ResourceRecordSet' => $modelRR,
                 ];
             }
-            $client->changeResourceRecordSets([
-                'HostedZoneId' => $zoneId,
-                'ChangeBatch' => [
-                    'Changes' => $zoneChanges,
-                ],
-            ]);
+            if ($zoneChanges) {
+                $client->changeResourceRecordSets([
+                    'HostedZoneId' => $zoneId,
+                    'ChangeBatch'  => [
+                        'Changes' => $zoneChanges,
+                    ],
+                ]);
+            }
             $client->deleteHostedZone([
                 'Id' => $zoneId,
             ]);
