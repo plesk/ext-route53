@@ -87,22 +87,12 @@ class Modules_Route53_Client
         return call_user_func_array(array($this->_client, $method), $args);
     }
 
+    /**
+     * @throws Modules_Route53_Exception with $awsCode = InvalidClientTokenId
+     */
     public function checkCredentials()
     {
-        $errorReporting = error_reporting(0);
-        try {
-            $this->_client->listHostedZones();
-        } catch (Aws\Route53\Exception\Route53Exception $e) {
-            error_reporting($errorReporting);
-            if ('InvalidClientTokenId' == $e->getAwsErrorCode()) {
-                throw new pm_Exception(pm_Locale::lmsg('invalidCredentials'));
-            }
-            throw $e;
-        } catch (Exception $e) {
-            error_reporting($errorReporting);
-            throw $e;
-        }
-        error_reporting($errorReporting);
+        $this->_client->listHostedZones();
     }
 
     /**
@@ -177,6 +167,7 @@ class Modules_Route53_Client
     public static function factory($config = array())
     {
         $config = array_merge(array(
+            'exception_class' => 'Modules_Route53_Exception',
             'credentials' => array(
                 'key' => pm_Settings::get('key'),
                 'secret' => pm_Settings::get('secret'),

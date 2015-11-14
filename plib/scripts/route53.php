@@ -113,6 +113,7 @@ $data = json_decode(file_get_contents('php://stdin'));
 //    {"command": "createPTRs", "ptr": {"ip_address": "2002:5bcc:18fd:000c:0001:0002:0003:0004", "hostname": "domain.tld"}}
 //]
 
+$errors = [];
 foreach ($data as $record) {
 
     switch ($record->command) {
@@ -135,10 +136,16 @@ foreach ($data as $record) {
                     continue;
                 }
 
-                $model = $client->createHostedZone(array(
-                    'Name' => $record->zone->name,
-                    'CallerReference' => uniqid(),
-                ));
+                try {
+                    $model = $client->createHostedZone(array(
+                        'Name'            => $record->zone->name,
+                        'CallerReference' => uniqid(),
+                    ));
+                } catch (Modules_Route53_Exception $e) {
+                    echo("Failed zone creation {$record->zone->name}: {$e->getMessage()}\n");
+                    $errors[] = $e;
+                    continue;
+                }
 
                 echo("Zone created: {$record->zone->name}\n");
 
@@ -221,13 +228,18 @@ foreach ($data as $record) {
             /**
              * Apply zone modification
              */
-
-            $model = $client->changeResourceRecordSets(array(
-                'HostedZoneId' => $zoneId,
-                'ChangeBatch' => array(
-                    'Changes' => $changes,
-                ),
-            ));
+            try {
+                $model = $client->changeResourceRecordSets(array(
+                    'HostedZoneId' => $zoneId,
+                    'ChangeBatch' => array(
+                        'Changes' => $changes,
+                    ),
+                ));
+            } catch (Modules_Route53_Exception $e) {
+                echo("Failed zone update {$record->zone->name}: {$e->getMessage()}\n");
+                $errors[] = $e;
+                continue;
+            }
 
             echo("ResourceRecordSet updated: {$record->zone->name}\n");
 
@@ -257,12 +269,18 @@ foreach ($data as $record) {
                     );
                 }
 
-                $model = $client->changeResourceRecordSets(array(
-                    'HostedZoneId' => $zoneId,
-                    'ChangeBatch' => array(
-                        'Changes' => $changes,
-                    ),
-                ));
+                try {
+                    $model = $client->changeResourceRecordSets(array(
+                        'HostedZoneId' => $zoneId,
+                        'ChangeBatch'  => array(
+                            'Changes' => $changes,
+                        ),
+                    ));
+                } catch (Modules_Route53_Exception $e) {
+                    echo("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
+                    $errors[] = $e;
+                    continue;
+                }
             }
 
             if (!$config['deleteHostedZone']) {
@@ -270,11 +288,18 @@ foreach ($data as $record) {
                 continue;
             }
 
-            $client->deleteHostedZone(array(
-                'Id' => $zoneId,
-            ));
+            try {
+                $client->deleteHostedZone(array(
+                    'Id' => $zoneId,
+                ));
+            } catch (Modules_Route53_Exception $e) {
+                echo("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
+                $errors[] = $e;
+                continue;
+            }
 
             echo("Zone deleted: {$record->zone->name}\n");
             break;
     }
 }
+exit(empty($errors) ? 0 : 255);

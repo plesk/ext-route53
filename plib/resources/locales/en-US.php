@@ -9,7 +9,6 @@ $messages = array(
     'enabledLabel' => 'Turn on Amazon Web Service Route 53',
     'authDataSaved' => 'The authorization data was saved.',
     'getAuth' => 'Get It Here',
-    'invalidCredentials' => 'Authentication failed with specified credentials.',
     'createDelegationSetButton' => 'Create Delegation Set',
     'createDelegationSetHint' => 'Creates a delegation set (a group of four name servers) that can be reused by multiple hosted zones.',
     'resetDefaultDelegationSetButton' => 'Reset Default',
