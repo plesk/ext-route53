@@ -181,7 +181,8 @@ class IndexController extends pm_Controller_Action
             throw new pm_Exception('Permission denied');
         }
         $client = Modules_Route53_Client::factory();
-        foreach ($client->getZones() as $zoneId) {
+        $hostedZones = $client->getZones();
+        foreach ($hostedZones as $zoneId) {
             $modelRRs = $client->listResourceRecordSets([
                 'HostedZoneId' => $zoneId,
             ]);
@@ -206,6 +207,11 @@ class IndexController extends pm_Controller_Action
             $client->deleteHostedZone([
                 'Id' => $zoneId,
             ]);
+
+            if ($zoneId !== end($hostedZones)) {
+                // Prevent rate limit of API requests
+                sleep(1);
+            }
         }
 
         $this->_status->addMessage('info', $this->lmsg('removeAllDone'));
