@@ -142,6 +142,10 @@ foreach ($data as $record) {
                         'CallerReference' => uniqid(),
                     ));
                 } catch (Modules_Route53_Exception $e) {
+                    if ('ConflictingDomainExists' == $e->awsCode) {
+                        // TODO implement some workaround
+                    }
+
                     echo("Failed zone creation {$record->zone->name}: {$e->getMessage()}\n");
                     $errors[] = $e;
                     continue;
