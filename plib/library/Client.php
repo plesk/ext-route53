@@ -149,16 +149,20 @@ class Modules_Route53_Client
             $args['DelegationSetId'] = str_replace('/delegationset/', '', $delegationSetId);
         }
         $model = $this->_client->createHostedZone($args);
-        $this->_zones[$model['HostedZone']['Name']] = $model['HostedZone']['Id'];
+        if (is_array($this->_zones)) {
+            $this->_zones[$model['HostedZone']['Name']] = $model['HostedZone']['Id'];
+        }
         return $model;
     }
 
     public function deleteHostedZone(array $args = array())
     {
         $model = $this->_client->deleteHostedZone($args);
-        foreach ($this->_zones as $zoneName => $zoneId) {
-            if (0 == strcmp($args['Id'], $zoneId)) {
-                unset($this->_zones[$zoneName]);
+        if (is_array($this->_zones)) {
+            foreach ($this->_zones as $zoneName => $zoneId) {
+                if (0 == strcmp($args['Id'], $zoneId)) {
+                    unset($this->_zones[$zoneName]);
+                }
             }
         }
         return $model;

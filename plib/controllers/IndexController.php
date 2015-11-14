@@ -9,6 +9,7 @@ class IndexController extends pm_Controller_Action
         if (!pm_Session::getClient()->isAdmin()) {
             throw new pm_Exception('Permission denied');
         }
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->view->pageTitle = $this->lmsg('pageTitle');
     }
 
@@ -38,6 +39,10 @@ class IndexController extends pm_Controller_Action
             $tabs[] = [
                 'title' => $this->lmsg('delegationSetTitle'),
                 'action' => 'delegation-set',
+            ];
+            $tabs[] = [
+                'title' => $this->lmsg('toolsTitle'),
+                'action' => 'tools',
             ];
         }
         return $tabs;
@@ -132,5 +137,72 @@ class IndexController extends pm_Controller_Action
         pm_Settings::set('delegationSet', $this->_getParam('id'));
         $this->_status->addMessage('info', $this->lmsg('defaultDelegationSetChanged'));
         $this->_redirect('index/delegation-set');
+    }
+
+    public function toolsAction()
+    {
+        $this->view->tools = [
+            [
+                'icon' => '/theme/icons/32/plesk/refresh.png',
+                'title' => $this->lmsg('syncAllButton'),
+                'description' => $this->lmsg('syncAllHint'),
+                'link' => "javascript:Modules_Route53_Confirm('{$this->_helper->url('sync-all')}', 'confirm', '{$this->lmsg('syncAllConfirm')}')",
+            ], [
+                'icon' => '/theme/icons/32/plesk/remove-selected.png',
+                'title' => $this->lmsg('removeAllButton'),
+                'description' => $this->lmsg('removeAllHint'),
+                'link' => "javascript:Modules_Route53_Confirm('{$this->_helper->url('remove-all')}', 'delete', '{$this->lmsg('removeAllConfirm')}')",
+            ],
+        ];
+        $this->view->tabs = $this->_getTabs();
+    }
+
+    public function syncAllAction()
+    {
+        if (!$this->getRequest()->isPost()) {
+            throw new pm_Exception('Permission denied');
+        }
+        // Workaround with internal classes because pm_ApiCli is not supported outside of CLI
+        require_once('api-common/cuDns.php');
+        $cu = new cuDNS();
+        $cu->syncAllZones();
+
+        $this->_status->addMessage('info', $this->lmsg('syncAllDone'));
+        $this->_redirect('index/tools');
+    }
+
+    public function removeAllAction()
+    {
+        if (!$this->getRequest()->isPost()) {
+            throw new pm_Exception('Permission denied');
+        }
+        $client = Modules_Route53_Client::factory();
+        foreach ($client->getZones() as $zoneId) {
+            $modelRRs = $client->listResourceRecordSets([
+                'HostedZoneId' => $zoneId,
+            ]);
+            $zoneChanges = [];
+            foreach ($modelRRs['ResourceRecordSets'] as $modelRR) {
+                if (in_array($modelRR['Type'], ['SOA', 'NS'])) {
+                    continue;
+                }
+                $zoneChanges[] = [
+                    'Action' => 'DELETE',
+                    'ResourceRecordSet' => $modelRR,
+                ];
+            }
+            $client->changeResourceRecordSets([
+                'HostedZoneId' => $zoneId,
+                'ChangeBatch' => [
+                    'Changes' => $zoneChanges,
+                ],
+            ]);
+            $client->deleteHostedZone([
+                'Id' => $zoneId,
+            ]);
+        }
+
+        $this->_status->addMessage('info', $this->lmsg('removeAllDone'));
+        $this->_redirect('index/tools');
     }
 }
