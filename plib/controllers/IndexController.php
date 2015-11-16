@@ -207,11 +207,6 @@ class IndexController extends pm_Controller_Action
             $client->deleteHostedZone([
                 'Id' => $zoneId,
             ]);
-
-            if ($zoneId !== end($hostedZones)) {
-                // Prevent rate limit of API requests
-                sleep(1);
-            }
         }
 
         $this->_status->addMessage('info', $this->lmsg('removeAllDone'));

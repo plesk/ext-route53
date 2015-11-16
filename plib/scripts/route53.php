@@ -305,11 +305,6 @@ foreach ($data as $record) {
             $log->info("Zone deleted: {$record->zone->name}\n");
             break;
     }
-
-    if ($record !== end($data)) {
-        // Prevent rate limit of API requests
-        sleep(1);
-    }
 }
 
 if ($log->hasErrors()) {

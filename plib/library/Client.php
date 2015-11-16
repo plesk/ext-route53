@@ -82,9 +82,18 @@ class Modules_Route53_Client
         $this->_client = $client;
     }
 
-    public function __call($method, $args)
+    public function __call($method, array $args = [])
     {
-        return call_user_func_array(array($this->_client, $method), $args);
+        try {
+            return call_user_func_array([$this->_client, $method], $args);
+        } catch (Modules_Route53_Exception $e) {
+            if ('Throttling' == $e->awsCode) {
+                // Rate limit of API requests exceeded
+                sleep(1);
+                return call_user_func_array([$this->_client, $method], $args);
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -92,7 +101,7 @@ class Modules_Route53_Client
      */
     public function checkCredentials()
     {
-        $this->_client->listHostedZones();
+        $this->listHostedZones();
     }
 
     /**
@@ -116,10 +125,10 @@ class Modules_Route53_Client
 
     public function getZones()
     {
-        $zones = array();
-        $opts = array(/* 'MaxItems' => 2 */);
+        $zones = [];
+        $opts = [/* 'MaxItems' => 2 */];
         do {
-            $model = $this->_client->listHostedZones($opts);
+            $model = $this->listHostedZones($opts);
             foreach ($model['HostedZones'] as $zone) {
                 $zones[$zone['Name']] = $zone['Id'];
             }
@@ -133,7 +142,7 @@ class Modules_Route53_Client
         $delegationSets = [];
         $opts = [/* 'MaxItems' => 2 */];
         do {
-            $model = $this->_client->listReusableDelegationSets($opts);
+            $model = $this->listReusableDelegationSets($opts);
             foreach ($model['DelegationSets'] as $delegationsSet) {
                 $delegationSets[$delegationsSet['Id']] = $delegationsSet['NameServers'];
             }
@@ -142,22 +151,22 @@ class Modules_Route53_Client
         return $delegationSets;
     }
 
-    public function createHostedZone(array $args = array())
+    public function createHostedZone(array $args = [])
     {
         if ($delegationSetId = pm_Settings::get('delegationSet')) {
             // Workaround for Route53Client::cleanId
             $args['DelegationSetId'] = str_replace('/delegationset/', '', $delegationSetId);
         }
-        $model = $this->_client->createHostedZone($args);
+        $model = $this->__call('createHostedZone', [$args]);
         if (is_array($this->_zones)) {
             $this->_zones[$model['HostedZone']['Name']] = $model['HostedZone']['Id'];
         }
         return $model;
     }
 
-    public function deleteHostedZone(array $args = array())
+    public function deleteHostedZone(array $args = [])
     {
-        $model = $this->_client->deleteHostedZone($args);
+        $model = $this->__call('deleteHostedZone', [$args]);
         if (is_array($this->_zones)) {
             foreach ($this->_zones as $zoneName => $zoneId) {
                 if (0 == strcmp($args['Id'], $zoneId)) {
@@ -168,17 +177,17 @@ class Modules_Route53_Client
         return $model;
     }
 
-    public static function factory($config = array())
+    public static function factory($config = [])
     {
-        $config = array_merge(array(
+        $config = array_merge([
             'exception_class' => 'Modules_Route53_Exception',
-            'credentials' => array(
+            'credentials' => [
                 'key' => pm_Settings::get('key'),
                 'secret' => pm_Settings::get('secret'),
-            ),
+            ],
             'version' => '2013-04-01',
             'region' => 'us-east-1',
-        ), $config);
+        ], $config);
         return new self(new \Aws\Route53\Route53Client($config));
     }
 }
