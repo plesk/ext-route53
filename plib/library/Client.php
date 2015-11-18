@@ -87,9 +87,9 @@ class Modules_Route53_Client
         try {
             return call_user_func_array([$this->_client, $method], $args);
         } catch (Modules_Route53_Exception $e) {
-            if ('Throttling' == $e->awsCode) {
+            if (in_array($e->awsCode, ['Throttling', 'ServiceUnavailable', 'PriorRequestNotComplete'])) {
                 // Rate limit of API requests exceeded
-                sleep(1);
+                sleep(10);
                 return call_user_func_array([$this->_client, $method], $args);
             }
             throw $e;
