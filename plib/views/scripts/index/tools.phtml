@@ -1,0 +1,23 @@
+<?php
+// Copyright 1999-2015. Parallels IP Holdings GmbH.
+?>
+<?php if ($this->tabs) echo $this->renderTabs($this->tabs) ?>
+<?php echo $this->renderTools($this->tools) ?>
+<script>
+//<![CDATA[
+function Modules_Route53_Confirm(url, type, text) {
+    Jsw.messageBox.show({
+        type: Jsw.messageBox.TYPE_YESNO,
+        buttonTitles: {
+            yes: '<?php echo $this->lmsg('buttonYes') ?>',
+            no: '<?php echo $this->lmsg('buttonNo') ?>'
+        },
+        text: text,
+        subtype: type,
+        onYesClick: function () {
+            Jsw.redirectPost(url);
+        }
+    });
+}
+//]]>
+</script>

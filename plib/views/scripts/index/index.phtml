@@ -1,6 +1,5 @@
 <?php
 // Copyright 1999-2015. Parallels IP Holdings GmbH.
 ?>
-<h4><?php echo $this->lmsg('getAuth') ?>: <a href="https://portal.aws.amazon.com/" target="_blank">portal.aws.amazon.com</a> -&gt; MyAccount -&gt; Security Credentials</h4>
-<br />
+<?php if ($this->tabs) echo $this->renderTabs($this->tabs) ?>
 <?php echo $this->form ?>
