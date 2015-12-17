@@ -58,12 +58,13 @@ class IndexController extends pm_Controller_Action
                 'nameServers' => implode("<br>", $nameServers),
                 'actions' => implode("<br>", [
                     $isDefault ? "<b>" . $this->lmsg('defaultDelegationSet') . "</b>"
-                        : "<a href='" . $this->_helper->url('default-delegation-set') . "/id/$urlId'>" .
-                            $this->lmsg('defaultDelegationSetButton') .
+                        : "<a class='s-btn sb-activate' data-method='post'" .
+                            " href='{$this->_helper->url('default-delegation-set')}/id/$urlId'>" .
+                                "<span>" . $this->lmsg('defaultDelegationSetButton') . "</span>" .
                         "</a>",
-                    // TODO recreate all zones
-                    "<a href='" . $this->_helper->url('delete-delegation-set') . "/id/$urlId'>" .
-                        $this->lmsg('deleteDelegationSetButton') .
+                    "<a class='s-btn sb-delete' data-method='post'" .
+                        " href='{$this->_helper->url('delete-delegation-set')}/id/$urlId'>" .
+                            "<span>" . $this->lmsg('deleteDelegationSetButton') . "</span>" .
                     "</a>",
                 ]),
             ];
@@ -89,7 +90,7 @@ class IndexController extends pm_Controller_Action
         ], [
             'title' => $this->lmsg('resetDefaultDelegationSetButton'),
             'description' => $this->lmsg('resetDefaultDelegationSetHint'),
-            'action' => 'default-delegation-set',
+            'link' => "javascript:Jsw.redirectPost('{$this->_helper->url('default-delegation-set')}')",
             'class' => 'sb-revert',
         ]]);
 
@@ -117,6 +118,9 @@ class IndexController extends pm_Controller_Action
 
     public function deleteDelegationSetAction()
     {
+        if (!$this->getRequest()->isPost()) {
+            throw new pm_Exception('Permission denied');
+        }
         $delegationSet = [
             'Id' => $this->_getParam('id'),
         ];
@@ -134,6 +138,9 @@ class IndexController extends pm_Controller_Action
 
     public function defaultDelegationSetAction()
     {
+        if (!$this->getRequest()->isPost()) {
+            throw new pm_Exception('Permission denied');
+        }
         pm_Settings::set('delegationSet', $this->_getParam('id'));
         $this->_status->addMessage('info', $this->lmsg('defaultDelegationSetChanged'));
         $this->_redirect('index/delegation-set');

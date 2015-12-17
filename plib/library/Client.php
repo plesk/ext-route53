@@ -188,6 +188,15 @@ class Modules_Route53_Client
             'version' => '2013-04-01',
             'region' => 'us-east-1',
         ], $config);
+
+        if (pm_ProductInfo::isWindows()) {
+            $caPath = __DIR__ . '/externals/cacert.pem';
+            $caPath = str_replace('/', DIRECTORY_SEPARATOR, $caPath);
+            $config = array_merge([
+                'http' => ['verify' => $caPath],
+            ], $config);
+        }
+
         return new self(new \Aws\Route53\Route53Client($config));
     }
 }
