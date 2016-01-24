@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2015. Parallels IP Holdings GmbH.
+// Copyright 1999-2016. Parallels IP Holdings GmbH.
 class IndexController extends pm_Controller_Action
 {
     public function init()
@@ -50,52 +50,14 @@ class IndexController extends pm_Controller_Action
 
     public function delegationSetAction()
     {
-        $data = [];
-        foreach (Modules_Route53_Client::factory()->getDelegationSets() as $delegationsSetId => $nameServers) {
-            $urlId = urlencode($delegationsSetId);
-            $isDefault = $delegationsSetId == pm_Settings::get('delegationSet');
-            $data[] = [
-                'nameServers' => implode("<br>", $nameServers),
-                'actions' => implode("<br>", [
-                    $isDefault ? "<b>" . $this->lmsg('defaultDelegationSet') . "</b>"
-                        : "<a class='s-btn sb-activate' data-method='post'" .
-                            " href='{$this->_helper->url('default-delegation-set')}/id/$urlId'>" .
-                                "<span>" . $this->lmsg('defaultDelegationSetButton') . "</span>" .
-                        "</a>",
-                    "<a class='s-btn sb-delete' data-method='post'" .
-                        " href='{$this->_helper->url('delete-delegation-set')}/id/$urlId'>" .
-                            "<span>" . $this->lmsg('deleteDelegationSetButton') . "</span>" .
-                    "</a>",
-                ]),
-            ];
-        }
-
-        $list = new pm_View_List_Simple($this->view, $this->getRequest());
-        $list->setColumns([
-            'nameServers' => [
-                'title' => $this->lmsg('nameServersColumn'),
-                'noEscape' => true,
-            ],
-            'actions' => [
-                'title' => $this->lmsg('actionsColumn'),
-                'noEscape' => true,
-            ],
-        ]);
-        $list->setData($data);
-        $list->setTools([[
-            'title' => $this->lmsg('createDelegationSetButton'),
-            'description' => $this->lmsg('createDelegationSetHint'),
-            'action' => 'create-delegation-set',
-            'class' => 'sb-item-add',
-        ], [
-            'title' => $this->lmsg('resetDefaultDelegationSetButton'),
-            'description' => $this->lmsg('resetDefaultDelegationSetHint'),
-            'link' => "javascript:Jsw.redirectPost('{$this->_helper->url('default-delegation-set')}')",
-            'class' => 'sb-revert',
-        ]]);
-
-        $this->view->list = $list;
+        $this->view->list = new Modules_Route53_List_DelegationSets($this->view, $this->getRequest());
         $this->view->tabs = $this->_getTabs();
+    }
+
+    public function delegationSetDataAction()
+    {
+        $list = new Modules_Route53_List_DelegationSets($this->view, $this->getRequest());
+        $this->_helper->json($list->fetchData());
     }
 
     public function createDelegationSetAction()

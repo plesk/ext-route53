@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 1999-2015. Parallels IP Holdings GmbH. -->
+<!-- Copyright 1999-2016. Parallels IP Holdings GmbH. -->
 <module>
   <id>route53</id>
   <name>Amazon Route 53</name>
   <description>This extension provides the functionality needed for integration with Amazon Route 53. It is a highly available and scalable Domain Name System (DNS) web service.</description>
-  <version>2.0</version>
+  <version>2.1</version>
   <release>1</release>
   <vendor>Plesk</vendor>
   <url>https://github.com/plesk/ext-route53</url>

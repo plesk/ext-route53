@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2015. Parallels IP Holdings GmbH.
+// Copyright 1999-2016. Parallels IP Holdings GmbH.
 $messages = array(
     'pageTitle' => 'Amazon Route 53',
     'indexPageTitle' => 'AWS API Authorization',
@@ -16,6 +16,7 @@ $messages = array(
     'resetDefaultDelegationSetHint' => 'Do not reuse any delegation set by new hosted zones.',
     'delegationSetCreated' => 'Reusable delegation set was created.',
     'nameServersColumn' => 'Name Servers',
+    'ipAddressesColumn' => 'IP Addresses',
     'actionsColumn' => 'Actions',
     'deleteDelegationSetButton' => 'Remove Delegation Set',
     'whiteLabel' => 'Learn more about white label name servers.',
