@@ -54,11 +54,11 @@ class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
                     $isDefault
                         ? "<b>" . $this->lmsg('defaultDelegationSet') . "</b>"
                         : "<a class='s-btn sb-activate' data-method='post'" .
-                        " href='{$view->url(['action' => 'default-delegation-set'])}/id/$urlId'>" .
+                        " href='{$view->url(['action' => 'default-delegation-set'])}?id=$urlId'>" .
                         "<span>" . $this->lmsg('defaultDelegationSetButton') . "</span>" .
                         "</a>",
                     "<a class='s-btn sb-delete' data-method='post'" .
-                    " href='{$view->url(['action' => 'delete-delegation-set'])}/id/$urlId'>" .
+                    " href='{$view->url(['action' => 'delete-delegation-set'])}?id=$urlId'>" .
                     "<span>" . $this->lmsg('deleteDelegationSetButton') . "</span>" .
                     "</a>",
                 ]),
