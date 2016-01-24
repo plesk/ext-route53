@@ -16,6 +16,7 @@ $messages = array(
     'resetDefaultDelegationSetHint' => 'Do not reuse any delegation set by new hosted zones.',
     'delegationSetCreated' => 'Reusable delegation set was created.',
     'nameServersColumn' => 'Name Servers',
+    'ipAddressesColumn' => 'IP Addresses',
     'actionsColumn' => 'Actions',
     'deleteDelegationSetButton' => 'Remove Delegation Set',
     'whiteLabel' => 'Learn more about white label name servers.',

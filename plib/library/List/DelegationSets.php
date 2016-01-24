@@ -11,6 +11,10 @@ class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
                 'title' => $this->lmsg('nameServersColumn'),
                 'noEscape' => true,
             ],
+            'ipAddresses' => [
+                'title' => $this->lmsg('ipAddressesColumn'),
+                'noEscape' => true,
+            ],
             'actions' => [
                 'title' => $this->lmsg('actionsColumn'),
                 'noEscape' => true,
@@ -40,10 +44,12 @@ class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
     {
         $data = [];
         foreach (Modules_Route53_Client::factory()->getDelegationSets() as $delegationsSetId => $nameServers) {
+            $ipAddresses = array_map('gethostbyname', $nameServers);
             $urlId = urlencode($delegationsSetId);
             $isDefault = $delegationsSetId == pm_Settings::get('delegationSet');
             $data[] = [
                 'nameServers' => implode("<br>", $nameServers),
+                'ipAddresses' => implode("<br>", $ipAddresses),
                 'actions' => implode("<br>", [
                     $isDefault
                         ? "<b>" . $this->lmsg('defaultDelegationSet') . "</b>"
