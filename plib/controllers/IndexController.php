@@ -54,6 +54,12 @@ class IndexController extends pm_Controller_Action
         $this->view->tabs = $this->_getTabs();
     }
 
+    public function delegationSetDataAction()
+    {
+        $list = new Modules_Route53_List_DelegationSets($this->view, $this->getRequest());
+        $this->_helper->json($list->fetchData());
+    }
+
     public function createDelegationSetAction()
     {
         $form = new Modules_Route53_Form_DelegationSet();

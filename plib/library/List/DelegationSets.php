@@ -18,6 +18,7 @@ class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
         ]);
 
         $this->setData($this->_getData($view));
+        $this->setDataUrl($view->url(['action' => 'delegation-set-data']));
 
         $this->setTools([
             [
