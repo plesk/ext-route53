@@ -21,7 +21,7 @@ class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
             ],
         ]);
 
-        $this->setData($this->_getData($view));
+        $this->setData($this->_getRecords($view));
         $this->setDataUrl($view->url(['action' => 'delegation-set-data']));
 
         $this->setTools([
@@ -40,7 +40,7 @@ class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
         ]);
     }
 
-    private function _getData($view)
+    private function _getRecords($view)
     {
         $data = [];
         foreach (Modules_Route53_Client::factory()->getDelegationSets() as $delegationsSetId => $nameServers) {
