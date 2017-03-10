@@ -116,13 +116,14 @@ $data = json_decode(file_get_contents('php://stdin'));
 $log = new Modules_Route53_Logger();
 foreach ($data as $record) {
 
+    $zoneName = $record->zone->name;
     switch ($record->command) {
         /**
          * Zone created or updated
          */
         case 'create':
         case 'update':
-            $zoneId = $client->getZoneId($record->zone->name);
+            $zoneId = $client->getZoneId($zoneName);
 
             $changes = array();
             if (!$zoneId) {
@@ -132,13 +133,13 @@ foreach ($data as $record) {
                  */
 
                 if (!$config['createHostedZone']) {
-                    $log->warn("Skip zone {$record->zone->name}: createHostedZone not allowed in script.");
+                    $log->warn("Skip zone {$zoneName}: createHostedZone not allowed in script.");
                     continue;
                 }
 
                 try {
                     $model = $client->createHostedZone(array(
-                        'Name'            => $record->zone->name,
+                        'Name'            => $zoneName,
                         'CallerReference' => uniqid(),
                     ));
                 } catch (Modules_Route53_Exception $e) {
@@ -146,11 +147,11 @@ foreach ($data as $record) {
                         // TODO implement some workaround
                     }
 
-                    $log->err("Failed zone creation {$record->zone->name}: {$e->getMessage()}");
+                    $log->err("Failed zone creation {$zoneName}: {$e->getMessage()}");
                     continue;
                 }
 
-                $log->info("Zone created: {$record->zone->name}\n");
+                $log->info("Zone created: {$zoneName}\n");
 
                 $zoneId = $model['HostedZone']['Id'];
 
@@ -224,7 +225,7 @@ foreach ($data as $record) {
             }
 
             if (!$config['changeResourceRecordSets']) {
-                $log->warn("Skip zone {$record->zone->name}: changeResourceRecordSets not allowed in script.\n");
+                $log->warn("Skip zone {$zoneName}: changeResourceRecordSets not allowed in script.\n");
                 continue;
             }
 
@@ -241,16 +242,16 @@ foreach ($data as $record) {
                     ));
                 }
             } catch (Modules_Route53_Exception $e) {
-                $log->err("Failed zone update {$record->zone->name}: {$e->getMessage()}\n");
+                $log->err("Failed zone update {$zoneName}: {$e->getMessage()}\n");
                 continue;
             }
 
-            $log->info("ResourceRecordSet updated: {$record->zone->name}\n");
+            $log->info("ResourceRecordSet updated: {$zoneName}\n");
 
             break;
 
         case 'delete':
-            $zoneId = $client->getZoneId($record->zone->name);
+            $zoneId = $client->getZoneId($zoneName);
 
             if (!$zoneId) {
                 continue;
@@ -283,13 +284,13 @@ foreach ($data as $record) {
                         ));
                     }
                 } catch (Modules_Route53_Exception $e) {
-                    $log->err("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
+                    $log->err("Failed zone removal {$zoneName}: {$e->getMessage()}\n");
                     continue;
                 }
             }
 
             if (!$config['deleteHostedZone']) {
-                $log->warn("Skip zone {$record->zone->name}: deleteHostedZone not allowed in script.\n");
+                $log->warn("Skip zone {$zoneName}: deleteHostedZone not allowed in script.\n");
                 continue;
             }
 
@@ -298,11 +299,11 @@ foreach ($data as $record) {
                     'Id' => $zoneId,
                 ));
             } catch (Modules_Route53_Exception $e) {
-                $log->err("Failed zone removal {$record->zone->name}: {$e->getMessage()}\n");
+                $log->err("Failed zone removal {$zoneName}: {$e->getMessage()}\n");
                 continue;
             }
 
-            $log->info("Zone deleted: {$record->zone->name}\n");
+            $log->info("Zone deleted: {$zoneName}\n");
             break;
     }
 }
