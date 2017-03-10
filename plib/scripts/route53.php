@@ -123,7 +123,8 @@ foreach ($data as $record) {
          */
         case 'create':
         case 'update':
-            $zoneId = $client->getZoneId($zoneName);
+            //AWS Route 53 does not use uppercase letters
+            $zoneId = $client->getZoneId(strtolower($zoneName));
 
             $changes = array();
             if (!$zoneId) {
@@ -251,7 +252,8 @@ foreach ($data as $record) {
             break;
 
         case 'delete':
-            $zoneId = $client->getZoneId($zoneName);
+            //AWS Route 53 does not use uppercase letters
+            $zoneId = $client->getZoneId(strtolower($zoneName));
 
             if (!$zoneId) {
                 continue;
