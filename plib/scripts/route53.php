@@ -216,8 +216,11 @@ foreach ($data as $record) {
                 if ('TXT' == $rr->type) {
                     /**
                      * AWS Route 53 requires quotation of the TXT Resource Record value
+                     * Max unsplitted TXT length should be 255
                      */
-                    $value = "\"{$opt}{$rr->value}\"";
+                    $value = array_reduce(str_split($opt . $rr->value, 255), function ($carry, $chunk) {
+                        return ($carry == '' ? '' : $carry . ' ') . '"' . $chunk . '"';
+                    }, '');
                 } else {
                     $value = "{$opt}{$rr->value}";
                 }
