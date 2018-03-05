@@ -114,6 +114,7 @@ $data = json_decode(file_get_contents('php://stdin'));
 //]
 
 $log = new Modules_Route53_Logger();
+
 foreach ($data as $record) {
 
     $zoneName = $record->zone->name;
@@ -214,6 +215,8 @@ foreach ($data as $record) {
                 }
 
                 if ('TXT' == $rr->type) {
+                    $rr->value = trim($rr->value);
+                    $rr->value = str_replace("\t", ' ', $rr->value);
                     /**
                      * AWS Route 53 requires quotation of the TXT Resource Record value
                      * Max unsplitted TXT length should be 255
