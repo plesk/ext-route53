@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2016. Parallels IP Holdings GmbH.
+// Copyright 1999-2018. Plesk International GmbH.
 pm_Loader::registerAutoload();
 pm_Context::init('route53');
 

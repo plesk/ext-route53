@@ -1,5 +1,5 @@
 <?php
-
+// Copyright 1999-2018. Plesk International GmbH.
 class Modules_Route53_ApiCli extends pm_Hook_ApiCli
 {
     public function initCommand($root, $user, $accessKey, $secretKey, $clear)

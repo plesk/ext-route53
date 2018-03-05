@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2016. Parallels IP Holdings GmbH.
+// Copyright 1999-2018. Plesk International GmbH.
 class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
 {
     public function __construct($view, $request, $options = [])

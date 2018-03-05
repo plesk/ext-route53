@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2016. Parallels IP Holdings GmbH.
+// Copyright 1999-2018. Plesk International GmbH.
 /**
  * This is the Amazon Route 53 integration script
  *
