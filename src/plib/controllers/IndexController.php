@@ -22,6 +22,8 @@ class IndexController extends pm_Controller_Action
 
             $this->_status->addMessage('info', $this->lmsg('authDataSaved'));
             $this->_helper->json(array('redirect' => pm_Context::getBaseUrl()));
+        } else {
+            pm_View_Status::addInfo($this->lmsg('statusRootAccountCredentials'));
         }
 
         $this->view->form = $form;

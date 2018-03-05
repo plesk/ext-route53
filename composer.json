@@ -1,0 +1,21 @@
+{
+  "name": "plesk/route53",
+  "description": "Amazon Route 53 Integration",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Plesk",
+      "email": "plesk-extensions@plesk.com"
+    }
+  ],
+  "config": {
+    "vendor-dir": "src/plib/vendor"
+  },
+  "require": {
+    "php": "^5.6 || ^7.0",
+    "aws/aws-sdk-php": "3.*"
+  }
+}
+
+
+

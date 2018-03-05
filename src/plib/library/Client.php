@@ -5,7 +5,7 @@
  * AWS PHP SDK
  * @link http://aws.amazon.com/sdk-for-php/
  */
-require_once(__DIR__ . '/externals/aws-autoloader.php');
+require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
  * Class Modules_Route53_Client
