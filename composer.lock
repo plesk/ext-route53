@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fcb871f35688c6637df7e72894c28d75",
+    "content-hash": "edc82659b02fbbe7fd5236c50210b0d6",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -321,6 +321,36 @@
                 "jsonpath"
             ],
             "time": "2016-12-03T22:08:25+00:00"
+        },
+        {
+            "name": "plesk/amazon-iam",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/plesk/amazon-iam.git",
+                "reference": "e5cb835e6c727341ae7ae8dbe8a7f2ac0262a816"
+            },
+            "require": {
+                "aws/aws-sdk-php": "3.*",
+                "php": "^5.5 || ^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Plesk",
+                    "email": "plesk-extensions@plesk.com"
+                }
+            ],
+            "description": "PHP library to create IAM users with predefined permissions",
+            "time": "2018-03-05T08:40:10+00:00"
         },
         {
             "name": "psr/http-message",

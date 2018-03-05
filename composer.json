@@ -13,9 +13,13 @@
   },
   "require": {
     "php": "^5.6 || ^7.0",
-    "aws/aws-sdk-php": "3.*"
-  }
+    "aws/aws-sdk-php": "3.*",
+    "plesk/amazon-iam": "0.1.*"
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/plesk/amazon-iam.git"
+    }
+  ]
 }
-
-
-

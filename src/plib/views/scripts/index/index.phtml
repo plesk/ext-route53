@@ -2,4 +2,6 @@
 // Copyright 1999-2016. Parallels IP Holdings GmbH.
 ?>
 <?php if ($this->tabs) echo $this->renderTabs($this->tabs) ?>
-<?php echo $this->form ?>
+<legend><?php echo pm_Locale::lmsg('awsApiAuthorization'); ?></legend>
+<span><?php echo pm_Locale::lmsg('awsDescriptionWindow'); ?></span>
+<?php echo $this->form; ?>
