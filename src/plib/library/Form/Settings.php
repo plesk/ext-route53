@@ -11,6 +11,17 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
     const KEY_TYPE_ROOT_CREDENTAL = 'rootCredential';
     const KEY_TYPE_USER_CREDENTAL = 'userCredential';
 
+    private $isConsole = false;
+
+    public function __construct($options = [])
+    {
+        if (!empty($options['isConsole'])) {
+            $this->isConsole = $options['isConsole'];
+        }
+
+        parent::__construct($options);
+    }
+
     public function init()
     {
         parent::init();
@@ -64,10 +75,13 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
             'value' => pm_Settings::get('enabled'),
         ));
 
-        $this->addControlButtons(array(
-            'sendTitle' => pm_Locale::lmsg('login'),
-            'cancelLink' => pm_Context::getModulesListUrl(),
-        ));
+        if (!$this->isConsole) {
+            $this->addControlButtons(array(
+                'sendTitle' => pm_Locale::lmsg('login'),
+                'cancelLink' => pm_Context::getModulesListUrl(),
+            ));
+        }
+
     }
 
     public function isValid($data)
