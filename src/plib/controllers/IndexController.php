@@ -144,14 +144,83 @@ class IndexController extends pm_Controller_Action
         $this->_redirect('index/tools');
     }
 
+    protected function getDomainAliasListApi()
+    {
+        $res = [];
+        $api = pm_ApiRpc::getService();
+        $siteAliasRequest = '<site-alias><get><filter/></get></site-alias>';
+        $siteAliasResponse = $api->call($siteAliasRequest);
+        $alias = json_decode(json_encode($siteAliasResponse->{'site-alias'}->get));
+        $aliasArray =  is_array($alias->result) ? $alias->result : array($alias->result);
+        foreach ($aliasArray as $aliasDomain) {
+            $res[] = $aliasDomain->info->name;
+        }
+
+        return $res;
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    protected function getDomainListApi()
+    {
+        $res = [];
+        $sitesRequest = '<site><get><filter/><dataset><gen_info/></dataset></get></site>';
+        $webspRequest = '<webspace><get><filter/><dataset><gen_info/></dataset></get></webspace>';
+
+        $api = pm_ApiRpc::getService();
+        $sitesResponse = $api->call($sitesRequest);
+        $webspResponse = $api->call($webspRequest);
+
+        $sites = json_decode(json_encode($sitesResponse->site->get));
+        $websp = json_decode(json_encode($webspResponse->webspace->get));
+
+        $sitesArray =  is_array($sites->result) ? $sites->result : array($sites->result);
+        $webspArray =  is_array($websp->result) ? $websp->result : array($websp->result);
+
+        $tmpList = array_merge($sitesArray, $webspArray);
+
+        foreach ($tmpList as $domain) {
+            if (!isset($domain->id)) {
+                continue;
+            }
+            $res[] = $domain->data->gen_info->name;
+        }
+
+        return $res;
+    }
+
     public function removeAllAction()
     {
         if (!$this->getRequest()->isPost()) {
             throw new pm_Exception('Permission denied');
         }
+
+        $domains = [];
+
+        if (method_exists('pm_Domain', 'getAllDomains')) {
+            $response = pm_Domain::getAllDomains();
+            foreach ($response as $data) {
+                $domainName = $data->getName();
+                $domains[] = $domainName;
+            }
+        } else {
+            $domains = $this->getDomainListApi();
+        }
+
+        $domainAliases = $this->getDomainAliasListApi();
+        $domains = array_merge($domains, $domainAliases);
+
         $client = Modules_Route53_Client::factory();
         $hostedZones = $client->getZones();
-        foreach ($hostedZones as $zoneId) {
+
+        foreach ($hostedZones as $zoneDomain => $zoneId) {
+            $zoneDomain = trim($zoneDomain, '.');
+            if (!in_array($zoneDomain, $domains)) {
+                continue;
+            }
+
             $modelRRs = $client->listResourceRecordSets([
                 'HostedZoneId' => $zoneId,
             ]);
