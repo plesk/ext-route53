@@ -5,6 +5,7 @@
   <name>Amazon Route 53</name>
   <description>This extension provides the functionality needed for integration with Amazon Route 53. It is a highly available and scalable Domain Name System (DNS) web service.</description>
   <category>dns</category>
+  <category>clouds</category>
   <version>2.5</version>
   <release>1</release>
   <vendor>Plesk</vendor>
