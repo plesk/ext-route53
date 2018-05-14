@@ -20,38 +20,19 @@ class Modules_Route53_ApiCli extends pm_Hook_ApiCli
         $this->exitCode(1);
     }
 
-    public function getAvailableOptions($command)
-    {
-        $options = parent::getAvailableOptions($command);
-        if (pm_ProductInfo::isUnix() && 'init' == $command) {
-            $options = array_diff($options, ['access-key', 'secret-key']);
-        }
-        return $options;
-    }
-
-    public function helpCommand()
-    {
-        ob_start();
-        parent::helpCommand();
-        $help = ob_get_contents();
-        ob_clean();
-
-        $initCommandKey = pm_ProductInfo::isUnix() ? 'Unix' : 'Win';
-        $help = str_replace('[[cli.commands.init]]', pm_Locale::lmsg("cli.commands.init{$initCommandKey}"), $help);
-        $this->stdout($help);
-    }
-
     /**
+     * @param $keyType
      * @param $accessKey
      * @param $secretKey
-     * @param $keyType
      */
     private function initUserCredentials($keyType, $accessKey, $secretKey)
     {
-        if (pm_ProductInfo::isUnix()) {
-            $accessKey = getenv('ACCESS_KEY');
-            $secretKey = getenv('SECRET_KEY');
-        }
+        $accessKeyEnv = getenv('ACCESS_KEY');
+        $accessKey = $accessKeyEnv ? : $accessKey;
+
+        $secretKeyEnv = getenv('SECRET_KEY');
+        $secretKey = $secretKeyEnv ? : $secretKey;
+
         $settingsForm = new Modules_Route53_Form_Settings([
             'isConsole' => true
         ]);

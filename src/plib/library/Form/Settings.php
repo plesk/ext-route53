@@ -86,6 +86,9 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
 
     public function isValid($data)
     {
+        if (!parent::isValid($data)) {
+            return false;
+        }
         if ($data['enabled']) {
             try {
                 if ($data['keyType'] == self::KEY_TYPE_ROOT_CREDENTAL) {
@@ -112,8 +115,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
             $this->getElement('key')->setRequired(false);
             $this->getElement('secret')->setRequired(false);
         }
-
-        return parent::isValid($data);
+        return true;
     }
 
     public function process()
