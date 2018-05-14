@@ -130,9 +130,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
             $this->saveUserData($key, $secret);
         } else {
             $res = $this->createUser($key, $secret);
-            if ($res) {
-                $this->saveUserData($res['key'], $res['secret']);
-            }
+            $this->saveUserData($res['key'], $res['secret']);
         }
         return $res;
     }
@@ -182,14 +180,13 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
 
             $response = $iamComponent->createAccessKey($userName);
             $responseAccessKey = $response->get('AccessKey');
-            pm_View_Status::addInfo(pm_Locale::lmsg('iamUserCreated', ['userName' => $userName]));
             $res = [
                 'userName' => $userName,
                 'key' => $responseAccessKey['AccessKeyId'],
                 'secret' => $responseAccessKey['SecretAccessKey'],
             ];
         } catch (\Aws\Exception\AwsException $e) {
-            pm_View_Status::addError($e->getAwsErrorMessage());
+            throw new pm_Exception($e->getAwsErrorMessage());
         }
 
         return $res;

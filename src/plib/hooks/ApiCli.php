@@ -64,23 +64,16 @@ class Modules_Route53_ApiCli extends pm_Hook_ApiCli
         ];
 
         if ($settingsForm->isValid($params)) {
-            $res = $settingsForm->process();
+            try {
+                $res = $settingsForm->process();
+            } catch (pm_Exception $e) {
+                $this->stderr($e->getMessage());
+                $this->exitCode(1);
+            }
             if ($keyType == Modules_Route53_Form_Settings::KEY_TYPE_USER_CREDENTAL) {
                 $this->stdout(pm_Locale::lmsg('userLoggedIn') . PHP_EOL);
             } else {
-                if ($res) {
-                    $this->stdout(pm_Locale::lmsg('iamUserCreated', ['userName' => $res['userName']]) . PHP_EOL);
-                } else {
-                    $message = '';
-                    foreach (pm_View_Status::getAllMessages(false) as $msg) {
-                        if ($msg['status'] != pm_View_Status::STATUS_ERROR) {
-                            continue;
-                        }
-                        $message .= $msg['content'] . PHP_EOL;
-                    }
-                    $this->stderr($message);
-                    $this->exitCode(1);
-                }
+                $this->stdout(pm_Locale::lmsg('iamUserCreated', ['userName' => $res['userName']]) . PHP_EOL);
             }
 
         } else {

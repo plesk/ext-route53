@@ -18,9 +18,16 @@ class IndexController extends pm_Controller_Action
         $form = new Modules_Route53_Form_Settings();
 
         if ($this->getRequest()->isPost() && $form->isValid($this->getRequest()->getPost())) {
-            $form->process();
-
-            $this->_status->addMessage('info', $this->lmsg('authDataSaved'));
+            try {
+                $res = $form->process();
+                if ($res) {
+                    $this->_status->addInfo($this->lmsg('iamUserCreated', ['userName' => $res['userName']]));
+                } else {
+                    $this->_status->addInfo($this->lmsg('authDataSaved'));
+                }
+            } catch (pm_Exception $e) {
+                $this->_status->addError($e->getMessage());
+            }
             $this->_helper->json(array('redirect' => pm_Context::getBaseUrl()));
         } else {
             pm_View_Status::addInfo($this->lmsg('statusRootAccountCredentials'));
