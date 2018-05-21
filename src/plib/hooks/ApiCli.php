@@ -2,29 +2,37 @@
 // Copyright 1999-2018. Plesk International GmbH.
 class Modules_Route53_ApiCli extends pm_Hook_ApiCli
 {
-    public function initCommand($root, $user, $accessKey, $secretKey, $clear)
+    public function initCommand($root, $user, $clear, $accessKey = '', $secretKey = '')
     {
         if (isset($clear)) {
             $this->clear();
             return;
         }
         if (isset($root)) {
-            $this->initUserCredentials($accessKey, $secretKey, Modules_Route53_Form_Settings::KEY_TYPE_ROOT_CREDENTAL);
+            $this->initUserCredentials(Modules_Route53_Form_Settings::KEY_TYPE_ROOT_CREDENTAL, $accessKey, $secretKey);
             return;
         }
         if (isset($user)) {
-            $this->initUserCredentials($accessKey, $secretKey, Modules_Route53_Form_Settings::KEY_TYPE_USER_CREDENTAL);
+            $this->initUserCredentials(Modules_Route53_Form_Settings::KEY_TYPE_USER_CREDENTAL, $accessKey, $secretKey);
             return;
         }
+        $this->stderr(pm_Locale::lmsg('cli.commands.init.wrongSyntax'));
+        $this->exitCode(1);
     }
 
     /**
+     * @param $keyType
      * @param $accessKey
      * @param $secretKey
-     * @param $keyType
      */
-    private function initUserCredentials($accessKey, $secretKey, $keyType)
+    private function initUserCredentials($keyType, $accessKey, $secretKey)
     {
+        $accessKeyEnv = getenv('ACCESS_KEY');
+        $accessKey = $accessKeyEnv ? : $accessKey;
+
+        $secretKeyEnv = getenv('SECRET_KEY');
+        $secretKey = $secretKeyEnv ? : $secretKey;
+
         $settingsForm = new Modules_Route53_Form_Settings([
             'isConsole' => true
         ]);
@@ -37,9 +45,14 @@ class Modules_Route53_ApiCli extends pm_Hook_ApiCli
         ];
 
         if ($settingsForm->isValid($params)) {
-            $res = $settingsForm->process();
+            try {
+                $res = $settingsForm->process();
+            } catch (pm_Exception $e) {
+                $this->stderr($e->getMessage());
+                $this->exitCode(1);
+            }
             if ($keyType == Modules_Route53_Form_Settings::KEY_TYPE_USER_CREDENTAL) {
-                $this->stdout( pm_Locale::lmsg('userLoggedIn') . PHP_EOL);
+                $this->stdout(pm_Locale::lmsg('userLoggedIn') . PHP_EOL);
             } else {
                 $this->stdout(pm_Locale::lmsg('iamUserCreated', ['userName' => $res['userName']]) . PHP_EOL);
             }
@@ -62,6 +75,6 @@ class Modules_Route53_ApiCli extends pm_Hook_ApiCli
     private function clear()
     {
         pm_Settings::clean();
-        $this->stdout( pm_Locale::lmsg('cliClearSuccess') . PHP_EOL);
+        $this->stdout(pm_Locale::lmsg('cliClearSuccess') . PHP_EOL);
     }
 }

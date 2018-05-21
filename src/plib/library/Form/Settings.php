@@ -86,34 +86,39 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
 
     public function isValid($data)
     {
-        if ($data['enabled']) {
-            try {
-                if ($data['keyType'] == self::KEY_TYPE_ROOT_CREDENTAL) {
-                    $res = $this->isAdministratorAccess($data['key'], $data['secret']);
-                    if (!$res) {
-                        throw new Exception(pm_Locale::lmsg('notAdministratorAccess'));
-                    }
-                } else {
-                    Modules_Route53_Client::factory([
-                        'credentials' => [
-                            'key' => $data['key'],
-                            'secret' => $data['secret'],
-                        ]
-                    ])->checkCredentials();
-                }
-
-            } catch (Exception $e) {
-                $this->markAsError();
-                $this->getElement('key')->addError($e->getMessage());
-                $this->getElement('secret')->addError($e->getMessage());
-                return false;
-            }
-        } else {
+        if (!$data['enabled']) {
             $this->getElement('key')->setRequired(false);
             $this->getElement('secret')->setRequired(false);
+            return parent::isValid($data);
         }
 
-        return parent::isValid($data);
+        if (!parent::isValid($data)) {
+            return false;
+        }
+
+        try {
+            if ($data['keyType'] == self::KEY_TYPE_ROOT_CREDENTAL) {
+                $res = $this->isAdministratorAccess($data['key'], $data['secret']);
+                if (!$res) {
+                    throw new Exception(pm_Locale::lmsg('notAdministratorAccess'));
+                }
+            } else {
+                Modules_Route53_Client::factory([
+                    'credentials' => [
+                        'key' => $data['key'],
+                        'secret' => $data['secret'],
+                    ]
+                ])->checkCredentials();
+            }
+
+        } catch (Exception $e) {
+            $this->markAsError();
+            $this->getElement('key')->addError($e->getMessage());
+            $this->getElement('secret')->addError($e->getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     public function process()
@@ -130,9 +135,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
             $this->saveUserData($key, $secret);
         } else {
             $res = $this->createUser($key, $secret);
-            if ($res) {
-                $this->saveUserData($res['key'], $res['secret']);
-            }
+            $this->saveUserData($res['key'], $res['secret']);
         }
         return $res;
     }
@@ -182,14 +185,13 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
 
             $response = $iamComponent->createAccessKey($userName);
             $responseAccessKey = $response->get('AccessKey');
-            pm_View_Status::addInfo(pm_Locale::lmsg('iamUserCreated', ['userName' => $userName]));
             $res = [
                 'userName' => $userName,
                 'key' => $responseAccessKey['AccessKeyId'],
                 'secret' => $responseAccessKey['SecretAccessKey'],
             ];
         } catch (\Aws\Exception\AwsException $e) {
-            pm_View_Status::addError($e->getAwsErrorMessage());
+            throw new pm_Exception($e->getAwsErrorMessage());
         }
 
         return $res;
