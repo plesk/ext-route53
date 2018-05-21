@@ -86,35 +86,38 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
 
     public function isValid($data)
     {
+        if (!$data['enabled']) {
+            $this->getElement('key')->setRequired(false);
+            $this->getElement('secret')->setRequired(false);
+            return parent::isValid($data);
+        }
+
         if (!parent::isValid($data)) {
             return false;
         }
-        if ($data['enabled']) {
-            try {
-                if ($data['keyType'] == self::KEY_TYPE_ROOT_CREDENTAL) {
-                    $res = $this->isAdministratorAccess($data['key'], $data['secret']);
-                    if (!$res) {
-                        throw new Exception(pm_Locale::lmsg('notAdministratorAccess'));
-                    }
-                } else {
-                    Modules_Route53_Client::factory([
-                        'credentials' => [
-                            'key' => $data['key'],
-                            'secret' => $data['secret'],
-                        ]
-                    ])->checkCredentials();
-                }
 
-            } catch (Exception $e) {
-                $this->markAsError();
-                $this->getElement('key')->addError($e->getMessage());
-                $this->getElement('secret')->addError($e->getMessage());
-                return false;
+        try {
+            if ($data['keyType'] == self::KEY_TYPE_ROOT_CREDENTAL) {
+                $res = $this->isAdministratorAccess($data['key'], $data['secret']);
+                if (!$res) {
+                    throw new Exception(pm_Locale::lmsg('notAdministratorAccess'));
+                }
+            } else {
+                Modules_Route53_Client::factory([
+                    'credentials' => [
+                        'key' => $data['key'],
+                        'secret' => $data['secret'],
+                    ]
+                ])->checkCredentials();
             }
-        } else {
-            $this->getElement('key')->setRequired(false);
-            $this->getElement('secret')->setRequired(false);
+
+        } catch (Exception $e) {
+            $this->markAsError();
+            $this->getElement('key')->addError($e->getMessage());
+            $this->getElement('secret')->addError($e->getMessage());
+            return false;
         }
+
         return true;
     }
 
