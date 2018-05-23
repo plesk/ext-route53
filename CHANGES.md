@@ -1,3 +1,7 @@
+# 2.6
+
+* [+] CLI improvements.
+
 # 2.5
 
 * [+] It is now possible to create restricted IAM-account for Route53 extension directly on the authorization form.
