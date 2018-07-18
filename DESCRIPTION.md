@@ -1,4 +1,4 @@
-This extension integrates Plesk with Amazon Route 53, a highly available and scalable DNS web service which you can use it as an external DNS service for your domains. The extension automatically synchronizes the DNS zones between Plesk and Amazon Route 53. You can:
+This extension integrates Plesk with Amazon Route 53, a highly available and scalable DNS web service which you can use as an external DNS service for your domains. The extension automatically synchronizes the DNS zones between Plesk and Amazon Route 53. You can:
 
 - See the list of Amazon name servers used to host your DNS zones and their IP addresses.
 - Manage delegation sets of name servers for registered DNS zones.
