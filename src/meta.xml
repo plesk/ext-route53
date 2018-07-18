@@ -11,4 +11,36 @@
   <vendor>Plesk</vendor>
   <url>https://github.com/plesk/ext-route53</url>
   <plesk_min_version>12.0.18</plesk_min_version>
+  <!--Localized descriptions below-->
+  <description xml:lang="ar">يوفر هذا الملحق الوظائف اللازمة للتكامل مع Amazon Route 53. هي خدمة ويب متاحة للغاية وقابلة للتحجيم بنظام أسماء النطاقات (DNS).</description>
+  <description xml:lang="ca-ES">Aquesta extensió proporciona la funcionalitat necessària per la integració amb Amazon Route 53. Es tracta d'un servei web DNS summament escalable i disponible.</description>
+  <description xml:lang="cs-CZ">Toto rozšíření poskytuje funkčnost vyžadovanou k integraci se službou Amazon Route 53. Jedná se o vysoce dostupnou a škálovatelnou webovou službu DNS (Domain Name System).</description>
+  <description xml:lang="da-DK">Denne udvidelse leverer den nødvendige funktionalitet til integration med Amazon Route 53. Det er en højt tilgængelig og skalerbar Domain Name System (DNS) webservice.</description>
+  <description xml:lang="de-DE">Diese Erweiterung bietet die für die Integration mit Amazon Route 53 benötigte Funktionalität. Es ist ein hochverfügbarer und hochskalierbarer DNS-Webservice.</description>
+  <description xml:lang="el-GR">Η επέκταση αυτή παρέχει τις λειτουργίες που απαιτούνται για την ενοποίηση με το Amazon Route 53. Είναι μια ευρέως διαθέσιμη υπηρεσία web Συστήματος ονομάτων τομέα (DNS) με δυνατότητα κλιμάκωσης.</description>
+  <description xml:lang="es-ES">Esta extensión ofrece la funcionalidad necesaria para la integración con Amazon Route 53. Se trata de un servicio web de sistema de nombres de dominio (DNS) sumamente escalable y disponible.</description>
+  <description xml:lang="fi-FI">Tämä laajennus tarjoaa Amazon Route 53 -integrointiin vaaditut toiminnot. Se on helposti saatavilla oleva skaalattava Domain Name System (DNS) -verkkopalvelu.</description>
+  <description xml:lang="fr-FR">Cette extension fournit les fonctionnalités requises pour l'intégration avec Amazon Route 53. Il s'agit d'un service Web Domain Name System (DNS) hautement disponible et évolutif.</description>
+  <description xml:lang="he-IL">הרחבה זו מספקת את הפונקציונליות הנחוצה לאינטגרציה עם Amazon Route 53. זהו שירות אינטרנט של מערכת שמות דומיינים (DNS) עם רמה גבוהה של זמינות ויכולת הרחבה.</description>
+  <description xml:lang="hu-HU">E bővítmény tartalmazza az Amazon Route 53 DNS webszolgáltatással integráláshoz szükséges funkciókat. Ez egy nagy hozzáférhetőségű és skálázható Domain név szolgáltató (DNS) webszolgáltatás.</description>
+  <description xml:lang="id-ID">Ekstensi ini menyediakan fungsionalitas yang diperlukan untuk integrasi dengan Amazon Route 53. Itu merupakan layanan web Sistem Nama Domain (DNS) yang sangat tersedia dan dapat disesuaikan menurut kebutuhan.</description>
+  <description xml:lang="it-IT">Questa estensione fornisce le funzionalità necessarie per l'integrazione con Amazon Route 53. È un servizio Web DNS (Domain Name Server) altamente disponibile e scalabile.</description>
+  <description xml:lang="ja-JP">この拡張は、Amazon Route 53 との統合に必要な機能を提供します。可用性と拡張性の優れたドメインネームシステム（DNS）ウェブサービスです。</description>
+  <description xml:lang="ko-KR">이 확장 프로그램은 Amazon Route 53과의 통합에 필요한 기능을 제공합니다. 이것은 많이 사용되고 확장이 가능한 도메인 이름 시스템(DNS) 웹 서비스입니다.</description>
+  <description xml:lang="ms-MY">Sambungan ini menyediakan fungsi yang diperlukan untuk integrasi dengan Amazon Route 53. Ia adalah perkhidmatan web Sistem Nama Domain (DNS) yang boleh didapati dan berskala.</description>
+  <description xml:lang="nb-NO">Denne utvidelsen gir funksjonaliteten du trenger for å integrere med Amazon Route 53. Dette er en DNS-webtjeneste som er svært tilgjengelig og skalerbar.</description>
+  <description xml:lang="nl-NL">Deze extensie biedt de functionaliteit die nodig is voor integratie met Amazon Route 53. Dit is een schaalbare, high-available webservice voor het domeinnaamsysteem (Domain Name System, of DNS).</description>
+  <description xml:lang="pl-PL">To rozszerzenie zapewnia funkcjonalność niezbędną do integracji z Amazon Route 53. Jest to wysoce dostępna i skalowalna usługa sieciowa DNS.</description>
+  <description xml:lang="pt-BR">Essa extensão fornece a funcionalidade necessária para integração com o Amazon Route 53. Trata-se de um serviço Web de Domain Name System (DNS) altamente disponível e escalável.</description>
+  <description xml:lang="pt-PT">Esta extensão fornece a funcionalidade necessária para integração com o Amazon Route 53. Trata-se de um serviço web de DNS (Domain Name System) altamente disponível e escalável.</description>
+  <description xml:lang="ro-RO">Această extensie asigură funcțiile necesare integrării cu Amazon Route 53. Este un serviciu web DNS (sistem de nume de domeniu) cu nivel ridicat de disponibilitate și scalabilitate.</description>
+  <description xml:lang="ru-RU">Это расширение предоставляет функциональность, необходимую для интеграции с Amazon Route 53. Это высокодоступная и масштабируемая веб-служба системы доменных имен (DNS).</description>
+  <description xml:lang="sv-SE">Detta tillägg ger den funktionalitet som behövs för integration med Amazon Route 53. Det är en mycket tillgänglig och skalbar DNS-webbtjänst (DNS).</description>
+  <description xml:lang="th-TH">โปรแกรมส่วนเสริมนี้มีฟังก์ชันการทำงานที่จำเป็นต่อการรวมระบบกับ Amazon Route 53 ซึ่งเป็นบริการเว็บ Domain Name System (DNS) ที่มีความสามารถในการปรับขนาดและความพร้อมใช้งานระดับสูง</description>
+  <description xml:lang="tl-PH">Ibinibigay ng extension na ito ang functionality na kinakailangan para sa pagsama sa Amazon Route 53. Isa itong napaka-available at scalable na Domain Name System (DNS) na serbisyo sa web.</description>
+  <description xml:lang="tr-TR">Bu uzantı, Amazon Route 53 ile entegrasyon için gereken işlevselliği sunar. Çok kullanılabilir ve ölçeklenebilir bir Alan Adı Sistemi (DNS) web servisidir.</description>
+  <description xml:lang="uk-UA">Це розширення надає функціонал, необхідний для інтеграції з Amazon Route 53. Це дуже доступна мережева послуга Domain Name System (DNS) з великими можливостями масштабування.</description>
+  <description xml:lang="vi-VN">Phần mở rộng này cung cấp chức năng cần thiết để tích hợp với Amazon Route 53. Đây là dịch vụ web Hệ thống Tên miền (DNS) có khả năng mở rộng và có khả năng mở rộng cao.</description>
+  <description xml:lang="zh-CN">该扩展提供了与Amazon Route 53进行集成所需的功能。它是一个高度可用和可伸缩的域名系统（DNS）web服务。</description>
+  <description xml:lang="zh-TW">該擴展提供了與Amazon Route 53進行集成所需的功能。它是一個高度可用和可伸縮的網域名稱系統（DNS）web服務。</description>
 </module>
