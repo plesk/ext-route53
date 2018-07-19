@@ -1,3 +1,8 @@
+# 2.7.0
+
+* [*] Translated the extension and its description into several new languages.
+* [*] Changed to the three digit versioning scheme (x.y.z).
+
 # 2.6
 
 * [+] CLI improvements.
