@@ -173,6 +173,59 @@ class Modules_Route53_Client
         return $model;
     }
 
+    public function getHostedZoneRecordsToDelete($zoneId)
+    {
+        $recordSetIsTruncated = true;
+        $nextRecordName = null;
+        try {
+            $changes = [];
+            while ($recordSetIsTruncated) {
+                $modelRRs = $this->listResourceRecordSets([
+                    'HostedZoneId' => $zoneId,
+                    'StartRecordName' => $nextRecordName,
+                ]);
+
+                $recordSetIsTruncated = $modelRRs['IsTruncated'];
+                $nextRecordName = $modelRRs['NextRecordName'];
+
+                foreach ($modelRRs['ResourceRecordSets'] as $modelRR) {
+
+                    if (!in_array($modelRR['Type'], $this->getConfig()['supportedTypes'])) {
+                        continue;
+                    }
+
+                    $changes[] = [
+                        'Action' => 'DELETE',
+                        'ResourceRecordSet' => $modelRR,
+                    ];
+                }
+            }
+            return $changes;
+        } catch (Exception $e) {
+            pm_Log::debug($e);
+            return null;
+        }
+    }
+
+    public function getConfig()
+    {  // Integration config
+        return [
+            'ttl' => 300,  // Resource Records TTL
+            'supportedTypes' => [  // Exportable Resource Record types
+                'A',
+                'TXT',
+                'CNAME',
+                'MX',
+                'SRV',
+                'SPF',
+                'AAAA',
+            ],
+            'createHostedZone' => true,  // Permission to create zone on AWS Route 53 billed
+            'changeResourceRecordSets' => true,  // Permission to modify zone on AWS Route 53 free
+            'deleteHostedZone' => true,  // Permission to delete zone on AWS Route 53 free
+        ];
+    }
+
     public static function factory($config = [])
     {
         $config = array_merge([
