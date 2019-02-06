@@ -79,6 +79,7 @@ $log = new Modules_Route53_Logger();
 foreach ($data as $record) {
 
     $zoneName = $record->zone->name;
+    $recordsTTL = $record->zone->soa->ttl;
     switch ($record->command) {
         /**
          * Zone created or updated
@@ -144,7 +145,7 @@ foreach ($data as $record) {
                         'ResourceRecordSet' => array(
                             'Name' => $rr->host,
                             'Type' => $rr->type,
-                            'TTL' => $client->getConfig()['ttl'],
+                            'TTL' => $recordsTTL,
                             'ResourceRecords' => array(),
                         ),
                     );
