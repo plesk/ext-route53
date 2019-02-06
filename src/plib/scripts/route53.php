@@ -14,45 +14,6 @@ if (!pm_Settings::get('enabled')) {
 }
 
 /**
- * Integration config
- */
-$config = array(
-    /**
-     * Resource Records TTL
-     */
-    'ttl' => 300,
-    /**
-     * Exportable Resource Record types
-     */
-    'supportedTypes' => array(
-        'A',
-        'TXT',
-        'CNAME',
-        'MX',
-        'SRV',
-        'SPF',
-        'AAAA',
-//        'SOA',
-//        'NS',
-    ),
-    /**
-     * Permission to create zone on AWS Route 53
-     * billed
-     */
-    'createHostedZone' => true,
-    /**
-     * Permission to modify zone on AWS Route 53
-     * free
-     */
-    'changeResourceRecordSets' => true,
-    /**
-     * Permission to delete zone on AWS Route 53
-     * free
-     */
-    'deleteHostedZone' => true,
-);
-
-/**
  * Create AWS Route 53 client
  */
 $client = Modules_Route53_Client::factory();
@@ -127,14 +88,14 @@ foreach ($data as $record) {
             //AWS Route 53 does not use uppercase letters
             $zoneId = $client->getZoneId(strtolower($zoneName));
 
-            $changes = array();
+            $changes = [];
             if (!$zoneId) {
 
                 /**
                  * Zone not exists on AWS Route 53, create
                  */
 
-                if (!$config['createHostedZone']) {
+                if (!$client->getConfig()['createHostedZone']) {
                     $log->warn("Skip zone {$zoneName}: createHostedZone not allowed in script.");
                     continue;
                 }
@@ -162,23 +123,7 @@ foreach ($data as $record) {
                 /**
                  * Zone exists, remove old Resource Records
                  */
-
-                $modelRRs = $client->listResourceRecordSets(array(
-                    'HostedZoneId' => $zoneId,
-                ));
-
-                foreach ($modelRRs['ResourceRecordSets'] as $modelRR) {
-
-                    if (!in_array($modelRR['Type'], $config['supportedTypes'])) {
-                        continue;
-                    }
-
-                    $changes[] = array(
-                        'Action' => 'DELETE',
-                        'ResourceRecordSet' => $modelRR,
-                    );
-
-                }
+                $changes = $client->getHostedZoneRecordsToDelete($zoneId);
             }
 
             /**
@@ -187,7 +132,7 @@ foreach ($data as $record) {
 
             foreach($record->zone->rr as $rr) {
 
-                if (!in_array($rr->type, $config['supportedTypes'])) {
+                if (!in_array($rr->type, $client->getConfig()['supportedTypes'])) {
                     continue;
                 }
 
@@ -199,7 +144,7 @@ foreach ($data as $record) {
                         'ResourceRecordSet' => array(
                             'Name' => $rr->host,
                             'Type' => $rr->type,
-                            'TTL' => $config['ttl'],
+                            'TTL' => $client->getConfig()['ttl'],
                             'ResourceRecords' => array(),
                         ),
                     );
@@ -231,7 +176,7 @@ foreach ($data as $record) {
                 $changes[$uid]['ResourceRecordSet']['ResourceRecords'][] = array('Value' => $value);
             }
 
-            if (!$config['changeResourceRecordSets']) {
+            if (!$client->getConfig()['changeResourceRecordSets']) {
                 $log->warn("Skip zone {$zoneName}: changeResourceRecordSets not allowed in script.\n");
                 continue;
             }
@@ -265,28 +210,14 @@ foreach ($data as $record) {
                 continue;
             }
 
-            if ($config['changeResourceRecordSets']) {
+            if ($client->getConfig()['changeResourceRecordSets']) {
 
-                $modelRRs = $client->listResourceRecordSets(array(
-                    'HostedZoneId' => $zoneId,
-                ));
-
-                $changes = array();
-                foreach ($modelRRs['ResourceRecordSets'] as $modelRR) {
-                    if (!in_array($modelRR['Type'], $config['supportedTypes'])) {
-                        continue;
-                    }
-                    $changes[] = array(
-                        'Action' => 'DELETE',
-                        'ResourceRecordSet' => $modelRR,
-                    );
-                }
-
+                $changes = $client->getHostedZoneRecordsToDelete($zoneId);
                 try {
                     if ($changes) {
                         $client->changeResourceRecordSets(array(
                             'HostedZoneId' => $zoneId,
-                            'ChangeBatch'  => array(
+                            'ChangeBatch' => array(
                                 'Changes' => $changes,
                             ),
                         ));
@@ -297,7 +228,7 @@ foreach ($data as $record) {
                 }
             }
 
-            if (!$config['deleteHostedZone']) {
+            if (!$client->getConfig()['deleteHostedZone']) {
                 $log->warn("Skip zone {$zoneName}: deleteHostedZone not allowed in script.\n");
                 continue;
             }

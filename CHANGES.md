@@ -1,3 +1,7 @@
+# 2.7.1
+
+* [*] The extension can now sync DNS zones with a large number of DNS records (more than 100).
+
 # 2.7.0
 
 * [*] Translated the extension and its description into several new languages.

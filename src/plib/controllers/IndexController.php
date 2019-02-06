@@ -1,5 +1,7 @@
 <?php
 // Copyright 1999-2018. Plesk International GmbH.
+require_once 'Zend/Controller/Action/Helper/Abstract.php';
+
 class IndexController extends pm_Controller_Action
 {
     public function init()
@@ -230,19 +232,7 @@ class IndexController extends pm_Controller_Action
                 continue;
             }
 
-            $modelRRs = $client->listResourceRecordSets([
-                'HostedZoneId' => $zoneId,
-            ]);
-            $zoneChanges = [];
-            foreach ($modelRRs['ResourceRecordSets'] as $modelRR) {
-                if (in_array($modelRR['Type'], ['SOA', 'NS'])) {
-                    continue;
-                }
-                $zoneChanges[] = [
-                    'Action' => 'DELETE',
-                    'ResourceRecordSet' => $modelRR,
-                ];
-            }
+            $zoneChanges = $client->getHostedZoneRecordsToDelete($zoneId);
             if ($zoneChanges) {
                 $client->changeResourceRecordSets([
                     'HostedZoneId' => $zoneId,
