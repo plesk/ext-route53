@@ -127,12 +127,12 @@ class IndexController extends pm_Controller_Action
 
         $this->view->tools = [
             [
-                'icon' => '/theme/icons/32/plesk/refresh.png',
+                'icon' => \pm_Context::getBaseUrl() . 'icons/32/refresh.png',
                 'title' => $this->lmsg('syncAllButton'),
                 'description' => $this->lmsg('syncAllHint'),
                 'link' => "javascript:Modules_Route53_Confirm('{$this->_helper->url('sync-all')}', 'confirm', '{$this->lmsg('syncAllConfirm')}')",
             ], [
-                'icon' => '/theme/icons/32/plesk/remove-selected.png',
+                'icon' => \pm_Context::getBaseUrl() . 'icons/32/remove-selected.png',
                 'title' => $this->lmsg('removeAllButton'),
                 'description' => $this->lmsg('removeAllHint'),
                 'link' => "javascript:Modules_Route53_Confirm('{$this->_helper->url('remove-all')}', 'delete', '{$this->lmsg('removeAllConfirm')}')",
