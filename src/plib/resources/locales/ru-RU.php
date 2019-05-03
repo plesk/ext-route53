@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Переиспользуемые делегированные наборы',
   'deleteDelegationSetButton' => 'Удалить делегированный набор',
   'enabledLabel' => 'Включить Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'У меня есть учетная запись IAM с ограниченными правами',
   'formRootCredential' => 'Я буду использовать параметры доступа учетной записи с правами root (они не будут сохранены)',
   'getAuth' => 'Здесь вы можете найти ваши параметры доступа пользователя root',

@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => '재사용할 수 있는 위임 세트',
   'deleteDelegationSetButton' => '위임 세트 제거',
   'enabledLabel' => 'Amazon 웹 서비스 Route 53 켜기',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => '제한된 IAM 사용자 계정을 가지고 있습니다',
   'formRootCredential' => '루트 계정 자격 증명을 사용합니다(저장 안 됨)',
   'getAuth' => '여기서 루트 계정 자격 증명 검색',

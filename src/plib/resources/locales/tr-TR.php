@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Yeniden Kullanılabilir Atama Setleri',
   'deleteDelegationSetButton' => 'Atama Setini kaldır',
   'enabledLabel' => 'Amazon Web Servisi Route 53\'ü aç',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Sınırlı bir IAM kullanıcı hesabı oluşturdum',
   'formRootCredential' => 'Kök hesap kimlik bilgilerini kullanacağım (saklanmazlar)',
   'getAuth' => 'Kök hesap kimlik bilgilerinizi burada bulabilirsiniz',

@@ -8,6 +8,7 @@ $messages = array(
     'keyLabel' => 'Key',
     'secretLabel' => 'Secret',
     'enabledLabel' => 'Turn on Amazon Web Service Route 53',
+    'manageNsRecordsLabel' => 'Manage NS and SOA records',
     'authDataSaved' => 'The authorization data was saved.',
     'getAuth' => 'Find your root account credentials here',
     'getAuthStepTwo' => 'You can also create one yourself. If you do, make sure to grant the "route53:*" and "route53domains:*" permissions to the account (<a href="%%learnMoreUrl%%">learn more</a>).',

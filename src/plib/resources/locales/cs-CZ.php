@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Opakovaně použitelné sady pro delegování',
   'deleteDelegationSetButton' => 'Odebrat sadu pro delegování',
   'enabledLabel' => 'Zapnout službu Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Vytvořil jsem omezený uživatelský účet IAM',
   'formRootCredential' => 'Použiji pověření uživatele účtu root (nebudou se ukládat)',
   'getAuth' => 'Zde naleznete svá pověření účtu root',

@@ -137,11 +137,18 @@ foreach ($data as $record) {
                     continue;
                 }
 
-                $uid = "CREATE {$rr->host} {$rr->type}";
+                $resourceRecordAction = "CREATE";
+                switch ($rr->type) {
+                    case 'NS':
+                        $resourceRecordAction = "UPSERT";
+                        break;
+                }
+
+                $uid = "{$resourceRecordAction} {$rr->host} {$rr->type}";
 
                 if (!array_key_exists($uid, $changes)) {
                     $changes[$uid] = array(
-                        'Action' => 'CREATE',
+                        'Action' => $resourceRecordAction,
                         'ResourceRecordSet' => array(
                             'Name' => $rr->host,
                             'Type' => $rr->type,
@@ -175,6 +182,29 @@ foreach ($data as $record) {
                 }
 
                 $changes[$uid]['ResourceRecordSet']['ResourceRecords'][] = array('Value' => $value);
+            }
+
+            if(pm_Settings::get('manageNsRecords')) {
+                $nsUid = "UPSERT {$record->zone->name} NS";
+                if (array_key_exists($nsUid, $changes)) {
+                    $uid = "UPSERT {$record->zone->name} SOA";
+                    $soaAuthority = trim($changes[$nsUid]['ResourceRecordSet']['ResourceRecords'][0]['Value'], ' .');
+                    $soaMail = trim(str_replace("@", ".", $record->zone->soa->email), ' .');
+                    $soaSerial = $record->zone->soa->serial;
+                    $changes[$uid] = array(
+                        'Action' => "UPSERT",
+                        'ResourceRecordSet' => [
+                            'Name' => $record->zone->name,
+                            'Type' => "SOA",
+                            'TTL' => $recordsTTL,
+                            'ResourceRecords' => [
+                                [
+                                    'Value' => "{$soaAuthority}. {$soaMail}. {$soaSerial} {$record->zone->soa->refresh} {$record->zone->soa->retry} {$record->zone->soa->expire} {$record->zone->soa->minimum}",
+                                ]
+                            ],
+                        ],
+                    );
+                }
             }
 
             if (!$client->getConfig()['changeResourceRecordSets']) {

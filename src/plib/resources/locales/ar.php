@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'مجموعات التفويض القابلة لإعادة الاستخدام',
   'deleteDelegationSetButton' => 'أزل مجموعة التفويض',
   'enabledLabel' => 'قم بتشغيل Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'لقد قمت بإنشاء حساب مستخدم IAM مقيد',
   'formRootCredential' => 'ساستخدم بيانات اعتماد الحساب الرئيسية (لن يتم تخزينها)',
   'getAuth' => 'ابحث عن بيانات اعتماد حسابك الرئيسية هنا',

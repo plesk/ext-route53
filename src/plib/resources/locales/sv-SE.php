@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Återanvändbara delegationsuppsättningar',
   'deleteDelegationSetButton' => 'Ta bort delegationsuppsättningen',
   'enabledLabel' => 'Slå på Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Jag har skapat ett begränsat IAM-användarkonto',
   'formRootCredential' => 'Jag kommer att använda rotkontouppgifterna (kommer inte att lagras) ',
   'getAuth' => 'Hitta ditt registreringsuppgifter för ditt rotkonto här',

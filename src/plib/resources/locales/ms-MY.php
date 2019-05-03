@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Set Delegasi Boleh Digunakan Semula',
   'deleteDelegationSetButton' => 'Keluarkan Set Delegasi',
   'enabledLabel' => 'Hidupkan Perkhidmatan Web Amazon Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Saya telah mencipta akaun pengguna IAM terhad',
   'formRootCredential' => 'Saya akan menggunakan kelayakan akaun akar (tidak akan disimpan)',
   'getAuth' => 'Cari kelayakan akaun akar anda di sini',

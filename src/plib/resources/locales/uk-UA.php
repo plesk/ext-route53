@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Набори делегації багаторазового використання',
   'deleteDelegationSetButton' => 'Видалити набір делегації',
   'enabledLabel' => 'Увімкнути Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Мною створено обмежений користувацький обліковий запис IAM',
   'formRootCredential' => 'Я використовуватиму дані привілейованого облікового запису (не будуть збережені)',
   'getAuth' => 'Знайдіть дані вашого привілейованого облікового запису тут',

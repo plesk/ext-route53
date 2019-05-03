@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => '可重复使用的代表组',
   'deleteDelegationSetButton' => '删除代表组',
   'enabledLabel' => '打开Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => '我已经创建了一个受限制的IAM用户账户',
   'formRootCredential' => '我将使用这个根账户凭证（不会被存储）',
   'getAuth' => '您可以在这里找到您的根账户凭证',

@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Conjuntos secundários reutilizáveis',
   'deleteDelegationSetButton' => 'Remover o conjunto secundário',
   'enabledLabel' => 'Ativar o Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Criei uma conta de utilizador IAM restrita',
   'formRootCredential' => 'Utilizarei as credenciais da conta raiz (não serão armazenadas)',
   'getAuth' => 'Encontre as credenciais da sua conta de raiz aqui',

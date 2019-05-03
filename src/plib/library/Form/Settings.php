@@ -70,6 +70,10 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
                 array('NotEmpty', true),
             ),
         ));
+        $this->addElement('checkbox', 'manageNsRecords', array(
+            'label' => pm_Locale::lmsg('manageNsRecordsLabel'),
+            'value' => pm_Settings::get('manageNsRecords'),
+        ));
         $this->addElement('checkbox', 'enabled', array(
             'label' => pm_Locale::lmsg('enabledLabel'),
             'value' => pm_Settings::get('enabled'),
@@ -126,6 +130,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         $res = [];
 
         pm_Settings::set('enabled', $this->getValue('enabled'));
+        pm_Settings::set('manageNsRecords', $this->getValue('manageNsRecords'));
 
         $keyType = $this->getValue('keyType');
         $key = $this->getValue('key');

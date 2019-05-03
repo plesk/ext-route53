@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Uudelleen käytettävät delegointisarjat',
   'deleteDelegationSetButton' => 'Poista delegointisarja',
   'enabledLabel' => 'Kytke päälle Amazon-verkkopalvelun Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Olen luonut rajoitetun IAM-käyttäjätilan',
   'formRootCredential' => 'Käytän päätilin tunnuksia (ei tallenneta)',
   'getAuth' => 'Päätilin tunnukset ovat saatavilla tässä',

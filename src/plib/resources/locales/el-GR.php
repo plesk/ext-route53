@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Σύνολα ανάθεσης πολλαπλής χρήσης',
   'deleteDelegationSetButton' => 'Κατάργηση του συνόλου ανάθεσης',
   'enabledLabel' => 'Ενεργοποίηση του Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Έχω δημιουργήσει έναν περιορισμένο λογαριασμό χρήστη IAM',
   'formRootCredential' => 'Θα χρησιμοποιήσω τα ριζικά διαπιστευτήρια λογαριασμού (δεν θα αποθηκευτούν)',
   'getAuth' => 'Βρείτε τα ριζικά διαπιστευτήρια χρήστη σας εδώ',

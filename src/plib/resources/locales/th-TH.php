@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'ชุดตัวแทนที่นำมาใช้ใหม่',
   'deleteDelegationSetButton' => 'ลบชุดตัวแทนออก',
   'enabledLabel' => 'เปิด Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'ฉันสร้างบัญชีผู้ใช้ IAM แบบจำกัดแล้ว',
   'formRootCredential' => 'ฉันจะใช้ข้อมูลรับรองบัญชีรูท (จะไม่ทำการจัดเก็บ)',
   'getAuth' => 'ค้นหาข้อมูลรับรองบัญชีรูทของคุณได้ที่นี่',

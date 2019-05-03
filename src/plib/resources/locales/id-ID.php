@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Set Delegasi Pakai Ulang',
   'deleteDelegationSetButton' => 'Hapus Set Delegasi',
   'enabledLabel' => 'Hidupkan Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Saya sudah membuat aku pengguna IAM terbatas',
   'formRootCredential' => 'Saya akan menggunakan kredensial akun root (tidak akan disimpan)',
   'getAuth' => 'Temukan kredensial akun root Anda di sini',

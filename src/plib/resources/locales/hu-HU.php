@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Újra felhasználható delegálási összeállítás',
   'deleteDelegationSetButton' => 'A delegálási összeállítás eltávolítása',
   'enabledLabel' => 'Amazon Web Service Route 53 DNS webszolgáltatás bekapcsolása',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Létrehoztam egy korlátozott IAM felhasználói fiókot.',
   'formRootCredential' => 'A gyökérszintű fiók hitelesítő adatokat használom (nem kerül tárolásra).',
   'getAuth' => 'Itt találhatja meg a gyökérszintű fiók hitelesítő adatokat.',

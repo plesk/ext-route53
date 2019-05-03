@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => '再利用可能な委任セット',
   'deleteDelegationSetButton' => '委任セットを削除',
   'enabledLabel' => 'Amazon Web Service の Route 53 をオンにする',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => '制限付きの IAM ユーザアカウントを作成しました',
   'formRootCredential' => 'root アカウントの認証情報を使用します（保存されません）',
   'getAuth' => 'root アカウントの認証情報はここで確認できます',

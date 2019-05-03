@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'ערכות האצלה לשימוש חוזר',
   'deleteDelegationSetButton' => 'הסר את ערכת ההאצלה',
   'enabledLabel' => 'הפעל את Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'יצרתי חשבון משתמש IAM מוגבל',
   'formRootCredential' => 'אשתמש באישורי חשבון הבסיס (לא יאוחסנו)',
   'getAuth' => 'כאן תמצא את אישורי חשבון הבסיס שלך',

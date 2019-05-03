@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Seturi de delegare reutilizabile',
   'deleteDelegationSetButton' => 'Ștergerea setului de delegare',
   'enabledLabel' => 'Activare Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Am creat un cont de utilizator IAM restricționat',
   'formRootCredential' => 'Voi utiliza acreditările contului root (nu se păstrează)',
   'getAuth' => 'Acreditările contului root se găsesc aici',

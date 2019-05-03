@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Genbrugelige uddelegeringsæt',
   'deleteDelegationSetButton' => 'Fjern uddelegeringssæt.',
   'enabledLabel' => 'Aktiver Amazon Web Service Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Jeg har oprettet en begrænset IAM-brugerkonto',
   'formRootCredential' => 'Jeg vil bruge root-konto akkreditiver (de gemmes ikke)',
   'getAuth' => 'Find dine rodkonto-akkreditiver her:',

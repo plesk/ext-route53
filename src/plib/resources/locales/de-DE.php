@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Wiederverwendbare Delegationssätze',
   'deleteDelegationSetButton' => 'Den Delegationssatz entfernen',
   'enabledLabel' => 'Amazon Web Service Route 53 einschalten',
+  'manageNsRecordsLabel' => 'NS and SOA Datensätze verwalten',
   'formPreCreatedLimitedUserCredential' => 'Ich habe ein eingeschränktes IAM-Benutzerkonto erstellt.',
   'formRootCredential' => 'Ich werde die Anmeldeinformationen des Root-Kontos verwenden (werden nicht gespeichert).',
   'getAuth' => 'Ihre Anmeldeinformationen für das Root-Konto finden Sie hier.',

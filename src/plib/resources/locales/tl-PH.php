@@ -28,6 +28,7 @@ $messages = [
   'delegationSetTitle' => 'Mga Delegation Set na Muling Magagamit',
   'deleteDelegationSetButton' => 'Alisin ang Delegation Set',
   'enabledLabel' => 'I-on ang Serbisyo sa Web ng Amazon na Route 53',
+  'manageNsRecordsLabel' => 'Manage NS and SOA records',
   'formPreCreatedLimitedUserCredential' => 'Gumawa ako ng pinaghihigpitang IAM user account',
   'formRootCredential' => 'Gagamitin ko ang mga kredensyal ng root account (hindi iso-store)',
   'getAuth' => 'Hanapin ang mga kredensyal ng iyong root account dito',
