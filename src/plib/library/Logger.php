@@ -1,5 +1,6 @@
 <?php
 // Copyright 1999-2018. Plesk International GmbH.
+// Logs are written to /var/log/plesk/panel.log
 
 class Modules_Route53_Logger
 {
@@ -7,23 +8,23 @@ class Modules_Route53_Logger
 
     public function info($message)
     {
-        $this->log('info', $message);
+        $this->log('INFO', $message);
     }
 
     public function warn($message)
     {
-        $this->log('warn', $message);
+        $this->log('WARN', $message);
     }
 
     public function err($message)
     {
-        $this->log('err', $message);
+        $this->log('ERR ', $message);
         static::pushErrorMessage($message);
     }
 
     private function log($type, $message)
     {
-        echo "$message\n";
+        echo $type . ": " . $message . "\n";
         $this->log[$type][] = [
             'timestamp' => time(),
             'message' => $message,
@@ -33,6 +34,11 @@ class Modules_Route53_Logger
     public function hasErrors()
     {
         return !empty($this->log['err']);
+    }
+
+    public static function clear()
+    {
+        pm_Settings::set('errorMessages', '');
     }
 
     public static function getErrorMessages()

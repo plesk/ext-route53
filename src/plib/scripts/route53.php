@@ -76,6 +76,9 @@ $data = json_decode(file_get_contents('php://stdin'));
 
 $log = new Modules_Route53_Logger();
 
+//Clear existing errors to prevent overflow (As it is implemented as setting and its max-length is 5000 chars)
+$log->clear();
+
 foreach ($data as $record) {
 
     $zoneName = $record->zone->name;
@@ -168,7 +171,7 @@ foreach ($data as $record) {
                 }
 
                 if ('TXT' == $rr->type) {
-                    $rr->value = trim($rr->value);
+                    $rr->value = trim(str_replace("\"", "\\\"", $rr->value));
                     $rr->value = str_replace("\t", ' ', $rr->value);
                     /**
                      * AWS Route 53 requires quotation of the TXT Resource Record value
@@ -217,14 +220,14 @@ foreach ($data as $record) {
              */
             try {
                 if ($changes) {
-                    $client->changeResourceRecordSets(array(
+                    $result = $client->changeResourceRecordSets(array(
                         'HostedZoneId' => $zoneId,
                         'ChangeBatch'  => array(
                             'Changes' => $changes,
                         ),
                     ));
                 }
-            } catch (Modules_Route53_Exception $e) {
+            } catch (Exception  $e) {
                 $log->err("Failed zone update {$zoneName}: {$e->getMessage()}\n");
                 continue;
             }
@@ -277,7 +280,7 @@ foreach ($data as $record) {
             break;
     }
 }
-
 if ($log->hasErrors()) {
+	fwrite(STDERR, "\n\nError updating DNS:\n" . $log->getErrorMessages());
     exit(255);
 }
