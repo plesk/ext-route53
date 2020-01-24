@@ -170,6 +170,8 @@ foreach ($data as $record) {
                     $value = array_reduce(str_split($opt . $rr->value, 255), function ($carry, $chunk) {
                         return ($carry == '' ? '' : $carry . ' ') . '"' . $chunk . '"';
                     }, '');
+                } elseif ('CAA' == $rr->type) {
+                    $value = "{$opt}\"{$rr->value}\"";
                 } else {
                     $value = "{$opt}{$rr->value}";
                 }

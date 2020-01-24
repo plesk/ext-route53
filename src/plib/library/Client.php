@@ -219,6 +219,7 @@ class Modules_Route53_Client
                 'SRV',
                 'SPF',
                 'AAAA',
+                'CAA',
             ],
             'createHostedZone' => true,  // Permission to create zone on AWS Route 53 billed
             'changeResourceRecordSets' => true,  // Permission to modify zone on AWS Route 53 free
