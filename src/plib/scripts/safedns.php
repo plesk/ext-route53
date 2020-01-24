@@ -118,6 +118,21 @@ function call_SafeDNS_API($method, $url, $data){
    return $result;
 }
 
+
+function array_recursive_search_key_map($needle, $haystack) {
+    foreach($haystack as $first_level_key=>$value) {
+        if ($needle === $value) {
+            return array($first_level_key);
+        } elseif (is_array($value)) {
+            $callback = array_recursive_search_key_map($needle, $value);
+            if ($callback) {
+                return array_merge(array($first_level_key), $callback);
+            }
+        }
+    }
+    return false;
+}
+
 $api_url="https://api.ukfast.io/safedns/v1";
 
 function request_safedns_zones(){
@@ -125,6 +140,71 @@ function request_safedns_zones(){
     $response = json_decode($get_data, true);
     $data = $response;
     echo(" request zones data ".json_encode($data));
+    echo "\n".gettype($data),"\n";
+
+    echo "\n Array Values:".var_dump($data);
+
+    echo "\n Array Search:".array_search("data",$data);
+
+/* Example safeDNS API response from request_zones function being run through var_dump:
+
+  ["data"]=>
+  array(2) {
+    [0]=>
+    array(2) {
+      ["name"]=>
+      string(19) "cloud.chrotek.co.uk"
+      ["description"]=>
+      string(0) ""
+    }
+    [1]=>
+    array(2) {
+      ["name"]=>
+      string(10) "chrotek.tk"
+      ["description"]=>
+      string(0) ""
+    }
+  }
+  ["meta"]=>
+  array(1) {
+    ["pagination"]=>
+    array(6) {
+      ["total"]=>
+      int(2)
+      ["count"]=>
+      int(2)
+      ["per_page"]=>
+      int(10)
+      ["current_page"]=>
+      int(1)
+      ["total_pages"]=>
+      int(1)
+      ["links"]=>
+      array(4) {
+        ["first"]=>
+        string(45) "https://api.ukfast.io/safedns/v1/zones?page=1"
+        ["previous"]=>
+        NULL
+        ["next"]=>
+        NULL
+        ["last"]=>
+        string(45) "https://api.ukfast.io/safedns/v1/zones?page=1"
+      }
+    }
+  }
+}
+
+
+
+
+
+/*
+    $search_value="name";
+    $array_keymap = array_recursive_search_key_map($search_value, $data);
+
+    var_dump($array_keymap);
+*/
+    echo "\n";
 }
 
 request_safedns_zones();
@@ -144,8 +224,8 @@ foreach ($data as $record) {
             /* For records in zone:
                  - Check if record is present in safedns
                  - If record is not present, create it.
-                 - If record is present, check if it needs ,and update
-                 - If record is present in safedns, but has been removed from plesk, delete it
+                 - If record is present, check if it's changed ,and update if yes
+                 - If record is present in safedns, but has been removed from plesk, delete it from SafeDNS
 
         case 'delete':
              // Delete a zone
