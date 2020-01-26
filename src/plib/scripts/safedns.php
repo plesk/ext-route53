@@ -65,10 +65,14 @@ $data = json_decode(file_get_contents('php://stdin'));
 //    {"command": "createPTRs", "ptr": {"ip_address": "1.2.3.4", "hostname": "domain.tld"}},
 //    {"command": "createPTRs", "ptr": {"ip_address": "2002:5bcc:18fd:000c:0001:0002:0003:0004", "hostname": "domain.tld"}}
 //]
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+
+To do list
+
+- Change results per page when querying record
 
 */
-
 function call_SafeDNS_API($method, $url, $data){
    $curl = curl_init();
    switch ($method){
@@ -80,7 +84,7 @@ function call_SafeDNS_API($method, $url, $data){
       case "GET":
          curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
          if ($data)
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);			 					
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
          break;
       case "PATCH":
          curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PATCH");
@@ -100,17 +104,16 @@ function call_SafeDNS_API($method, $url, $data){
    // OPTIONS:
    curl_setopt($curl, CURLOPT_URL, $url);
    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-      'Authorization: ECf4UuwBe8CvmpvnparbtS01cWaULY3u',
+      'Authorization: oJAs5AIifPxZ28pTPSC8x2uRV2EPrTgO',
       'Content-Type: application/json',
    ));
    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
    // EXECUTE:
    $result = curl_exec($curl);
-   if(!$result){die("API Connection Failure \n");}
-
    $responsecode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-//   echo "Response code : ".$responsecode;
+   if(!$result){die("API Connection Failure. Response code :".$responsecode."\n");}
+   echo "Response code : ".$responsecode;
 // TODO - If response code not 200 , handle
    curl_close($curl);
 
@@ -118,99 +121,56 @@ function call_SafeDNS_API($method, $url, $data){
    return $result;
 }
 
-
-function array_recursive_search_key_map($needle, $haystack) {
-    foreach($haystack as $first_level_key=>$value) {
-        if ($needle === $value) {
-            return array($first_level_key);
-        } elseif (is_array($value)) {
-            $callback = array_recursive_search_key_map($needle, $value);
-            if ($callback) {
-                return array_merge(array($first_level_key), $callback);
-            }
-        }
-    }
-    return false;
-}
-
 $api_url="https://api.ukfast.io/safedns/v1";
+$safedns_domains=array();
 
-function request_safedns_zones(){
-    $get_data = call_SafeDNS_API('GET',"https://api.ukfast.io/safedns/v1/zones",false);
+
+function request_safedns_zones($api_url){
+    $get_data = call_SafeDNS_API('GET',$api_url."/zones",false);
     $response = json_decode($get_data, true);
     $data = $response;
-    echo(" request zones data ".json_encode($data));
-    echo "\n".gettype($data),"\n";
+    $safedns_domains=array();
+    global $safedns_domains;
 
-    echo "\n Array Values:".var_dump($data);
+    $datax = explode(",",json_encode($data));
 
-    echo "\n Array Search:".array_search("data",$data);
+    foreach ($datax as $val) {
+        if (strpos($val, 'name') !== false){
+            $exploded=explode(":",$val);
+            $domainx=end($exploded);
+            $domain=str_replace('"','',$domainx);
+//            echo "Domain: ".$domain."\n";
+            $safedns_domains[] = $domain;
 
-/* Example safeDNS API response from request_zones function being run through var_dump:
-
-  ["data"]=>
-  array(2) {
-    [0]=>
-    array(2) {
-      ["name"]=>
-      string(19) "cloud.chrotek.co.uk"
-      ["description"]=>
-      string(0) ""
+        }
     }
-    [1]=>
-    array(2) {
-      ["name"]=>
-      string(10) "chrotek.tk"
-      ["description"]=>
-      string(0) ""
-    }
-  }
-  ["meta"]=>
-  array(1) {
-    ["pagination"]=>
-    array(6) {
-      ["total"]=>
-      int(2)
-      ["count"]=>
-      int(2)
-      ["per_page"]=>
-      int(10)
-      ["current_page"]=>
-      int(1)
-      ["total_pages"]=>
-      int(1)
-      ["links"]=>
-      array(4) {
-        ["first"]=>
-        string(45) "https://api.ukfast.io/safedns/v1/zones?page=1"
-        ["previous"]=>
-        NULL
-        ["next"]=>
-        NULL
-        ["last"]=>
-        string(45) "https://api.ukfast.io/safedns/v1/zones?page=1"
+    return $safedns_domains;
+}
+
+
+function check_create_zone($api_url,$safedns_domains,$input_zone){
+
+    if (in_array($input_zone, $safedns_domains))
+      {}
+    else
+      {
+      echo "Match not found for ".$input_zone."\n";
+      // CREATE ZON
+      $postdata = array(
+          'name' => $input_zone,
+      );
+      call_SafeDNS_API('POST',$api_url."/zones/", json_encode($postdata));
       }
-    }
-  }
 }
 
 
+request_safedns_zones($api_url);
+
+//check_create_zone($api_url,$safedns_domains,"quack.com");
+
+//call_SafeDNS_API('DELETE',$api_url."/zones/quack.com",false);
 
 
-
-/*
-    $search_value="name";
-    $array_keymap = array_recursive_search_key_map($search_value, $data);
-
-    var_dump($array_keymap);
-*/
-    echo "\n";
-}
-
-request_safedns_zones();
-
-
-/* EXAMPLE PROGRAM LOOP
 foreach ($data as $record) {
 
     $zoneName = $record->zone->name;
@@ -219,16 +179,21 @@ foreach ($data as $record) {
         
         case 'create':
         case 'update':
-
             // If zone does not exist, create it
+            check_create_zone($api_url,$safedns_domains,$zoneName);
+
+             
             /* For records in zone:
                  - Check if record is present in safedns
-                 - If record is not present, create it.
-                 - If record is present, check if it's changed ,and update if yes
+          */ //     - If record is not present, create it.
+               
+              /*   - If record is present, check if it's changed ,and update if yes
                  - If record is present in safedns, but has been removed from plesk, delete it from SafeDNS
-
+*/
         case 'delete':
+             call_SafeDNS_API('DELETE',$api_url."/zones/".$zoneName,false);
+
              // Delete a zone
               
     }
-}*/
+}
