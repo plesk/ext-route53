@@ -1,0 +1,25 @@
+  {"command": "(update)",
+  "zone": {
+      "name": "domain.tld.",
+      "displayName": "domain.tld.",
+      "soa": {
+          "email": "email@address",
+          "status": 0,
+          "type": "master",
+          "ttl": 86400,
+          "refresh": 10800,
+          "retry": 3600,
+          "expire": 604800,
+          "minimum": 10800,
+          "serial": 123123123,
+          "serial_format": "UNIXTIMESTAMP"
+      },
+      "rr": [{
+          "host": "www.domain.tld.",
+          "displayHost": "www.domain.tld.",
+          "type": "CNAME",
+          "displayValue": "domain.tld.",
+          "opt": "",
+          "value": "domain.tld."
+      }]
+}}
