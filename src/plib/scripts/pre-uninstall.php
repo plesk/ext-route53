@@ -1,7 +1,6 @@
 <?php
 // Copyright 1999-2018. Plesk International GmbH.
 pm_Loader::registerAutoload();
-pm_Context::init('route53');
 
 try {
     $result = pm_ApiCli::call('server_dns', array('--disable-custom-backend'));
