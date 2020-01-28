@@ -73,6 +73,11 @@ To do list
 - Change results per page when querying record
 
 */
+
+//$data = json_decode(file_get_contents('php://stdin'));
+$data = json_decode(file_get_contents('example-data.json'),true);
+
+
 function call_SafeDNS_API($method, $url, $data){
    $curl = curl_init();
    switch ($method){
@@ -113,7 +118,7 @@ function call_SafeDNS_API($method, $url, $data){
    $result = curl_exec($curl);
    $responsecode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
    if(!$result){die("API Connection Failure. Response code :".$responsecode."\n");}
-   echo "Response code : ".$responsecode;
+   echo "Response code : ".$responsecode."\n";
 // TODO - If response code not 200 , handle
    curl_close($curl);
 
@@ -154,8 +159,8 @@ function check_create_zone($api_url,$safedns_domains,$input_zone){
       {}
     else
       {
-      echo "Match not found for ".$input_zone."\n";
-      // CREATE ZON
+      echo "Creating Zone: ".$input_zone."\n";
+      // CREATE ZONE
       $postdata = array(
           'name' => $input_zone,
       );
@@ -163,37 +168,86 @@ function check_create_zone($api_url,$safedns_domains,$input_zone){
       }
 }
 
+function create_record($api_url,$zone_name,$record_name,$record_type,$record_content,$record_priority){
+    echo "Creating ".$record_type." Record: ".rtrim($record_name, ".")." with content ".$record_content." on zone ".$zone_name."\n";
+
+    if(strcasecmp($record_type, 'MX') == 0){
+        $postdata = array(
+            'name' => rtrim($record_name, "."),
+            'type' => $record_type,
+            'content' => rtrim($record_content, "."),
+            'priority' => $record_priority
+            );
+    } elseif(strcasecmp($record_type, 'TXT') == 0) {
+        $postdata = array(
+            'name' => rtrim($record_name, "."),
+            'type' => $record_type,
+            'content' => '"'.rtrim($record_content, ".").'"'
+            );
+    } else {
+        $postdata = array(
+            'name' => rtrim($record_name, "."),
+            'type' => $record_type,
+            'content' => rtrim($record_content, ".")
+//        'ttl' => $record_ttl
+    );
+    }
+    call_SafeDNS_API('POST',$api_url."/zones/".$zone_name."/records", json_encode($postdata));
+}
+
 
 request_safedns_zones($api_url);
+//$data = json_decode(file_get_contents('php://stdin'));
+$data = json_decode(file_get_contents('example-data.json'),true);
 
-//check_create_zone($api_url,$safedns_domains,"quack.com");
+$xcommand=explode('"', $data['command']);
+$command=$xcommand[0];
 
-//call_SafeDNS_API('DELETE',$api_url."/zones/quack.com",false);
-
-
-foreach ($data as $record) {
-
-    $zoneName = $record->zone->name;
-    $recordsTTL = $record->zone->soa->ttl;
-    switch ($record->command) {
-        
-        case 'create':
-        case 'update':
-            // If zone does not exist, create it
-            check_create_zone($api_url,$safedns_domains,$zoneName);
-
-             
-            /* For records in zone:
-                 - Check if record is present in safedns
-          */ //     - If record is not present, create it.
-               
-              /*   - If record is present, check if it's changed ,and update if yes
-                 - If record is present in safedns, but has been removed from plesk, delete it from SafeDNS
-*/
-        case 'delete':
-             call_SafeDNS_API('DELETE',$api_url."/zones/".$zoneName,false);
-
-             // Delete a zone
-              
-    }
+if(!isset($data['command'])){
+    echo "No command provided in data. Exiting Script. \n";
+    echo "------------- Data Provided -----------------\n";
+    echo var_dump($data);
+    echo "---------------------------------------------\n";
+    exit(1);
 }
+
+echo var_dump($data);
+
+switch ($command) :
+    case 'create':
+    case 'update':
+        echo "UPDATE COMMAND\n";
+        // If zone does not exist, create it
+        check_create_zone($api_url,$safedns_domains,$data['zone']['name']);
+
+        $rrCount=0;
+        foreach ($data['zone']['rr'] as $variablerr) {
+            create_record($api_url,$data['zone']['name'],$variablerr['host'],$variablerr['type'],$variablerr['value'],$variablerr['opt']); 
+        //  For records in zone:
+        //     - Check if record is present in safedns
+        //     - If record is not present, create it.
+            
+        //     - If record is present, check if it's changed ,and update if yes
+        //     - If record is present in safedns, but has been removed from plesk, delete it from SafeDNS
+            $rrCount++;
+        }
+        break;
+    case 'delete':
+        echo "DELETE COMMAND\n";
+             // Delete a zone
+             //call_SafeDNS_API('DELETE',$api_url."/zones/".$zoneName,false);
+        break;
+    default:
+        echo "Unknown Command : ".$command." !! \n";
+        echo "------------- Data Provided -----------------\n";
+        echo var_dump($data);
+        echo "---------------------------------------------\n";
+        exit(1);
+endswitch;
+
+
+   // }
+//}
+
+
+

@@ -1,25 +1,12 @@
-  {"command": "(update)",
-  "zone": {
-      "name": "domain.tld.",
-      "displayName": "domain.tld.",
-      "soa": {
-          "email": "email@address",
-          "status": 0,
-          "type": "master",
-          "ttl": 86400,
-          "refresh": 10800,
-          "retry": 3600,
-          "expire": 604800,
-          "minimum": 10800,
-          "serial": 123123123,
-          "serial_format": "UNIXTIMESTAMP"
-      },
-      "rr": [{
-          "host": "www.domain.tld.",
-          "displayHost": "www.domain.tld.",
-          "type": "CNAME",
-          "displayValue": "domain.tld.",
-          "opt": "",
-          "value": "domain.tld."
-      }]
-}}
+{"command": "create", "zone": {"name": "examplewibble.com", "displayName": "examplewibble.com.", "soa": {"email": "amihailov@parallels.com", "status": 0, "type": "master", "ttl": 86400, "refresh": 10800, "retry": 3600, "expire": 604800, "minimum": 10800, "serial": 1363228965, "serial_format": "UNIXTIMESTAMP"}, "rr": [
+    {"host": "www.examplewibble.com.", "displayHost": "www.examplewibble.com.", "type": "CNAME", "displayValue": "examplewibble.com.", "opt": "", "value": "examplewibble.com."},
+    {"host": "1.2.3.4", "displayHost": "1.2.3.4", "type": "PTR", "displayValue": "examplewibble.com.", "opt": "24", "value": "examplewibble.com."},
+    {"host": "examplewibble.com.", "displayHost": "examplewibble.com.", "type": "TXT", "displayValue": "v=spf1 +a +mx -all", "opt": "", "value": "v=spf1 +a +mx -all"},
+    {"host": "ftp.examplewibble.com.", "displayHost": "ftp.examplewibble.com.", "type": "CNAME", "displayValue": "examplewibble.com.", "opt": "", "value": "examplewibble.com."},
+    {"host": "ipv4.examplewibble.com.", "displayHost": "ipv4.examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"},
+    {"host": "mail.examplewibble.com.", "displayHost": "mail.examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"},
+    {"host": "examplewibble.com.", "displayHost": "examplewibble.com.", "type": "MX", "displayValue": "mail.examplewibble.com.", "opt": "10", "value": "mail.examplewibble.com."},
+    {"host": "webmail.examplewibble.com.", "displayHost": "webmail.examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"},
+    {"host": "examplewibble.com.", "displayHost": "examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"},
+    {"host": "ns.examplewibble.com.", "displayHost": "ns.examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"}
+]}}
