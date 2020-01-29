@@ -129,7 +129,6 @@ function call_SafeDNS_API($method, $url, $data){
 $api_url="https://api.ukfast.io/safedns/v1";
 $safedns_domains=array();
 
-
 function request_safedns_zones($api_url){
     $get_data = call_SafeDNS_API('GET',$api_url."/zones",false);
     $response = json_decode($get_data, true);
@@ -152,6 +151,21 @@ function request_safedns_zones($api_url){
     return $safedns_domains;
 }
 
+function request_safedns_record_for_zone($api_url,$zone_name){
+    $get_data = call_SafeDNS_API('GET',$api_url."/zones/".$zone_name."/records",false);
+    $response = json_decode($get_data, true);
+    $data = $response;
+    global $records_array;
+    $records_array = array();
+    foreach ($data['data'] as $val) {
+    /* echo "ID : " .$val['id']."\n";
+       echo "NAME : ".$val['name']."\n";
+       echo "TYPE : ".$val['type']."\n";
+       echo "CONTENT : ".$val['content']."\n";         */
+       array_push($records_array,$val['id'].",".$val['name'].",".$val['type'].",".$val['content']);
+    }
+    return $records_array;
+}
 
 function check_create_zone($api_url,$safedns_domains,$input_zone){
 
@@ -212,7 +226,7 @@ if(!isset($data['command'])){
 }
 
 echo var_dump($data);
-
+/*      ---------------------------- MAIN PROGRAM LOOP COMMENTED OUT FOR NOW WHILST I WRITE FUNCTIONS. 
 switch ($command) :
     case 'create':
     case 'update':
@@ -244,8 +258,62 @@ switch ($command) :
         echo "---------------------------------------------\n";
         exit(1);
 endswitch;
-echo "Test Delete \n";
-call_SafeDNS_API('DELETE',$api_url."/zones/"."EXAMPLEWIBBLE.COM",false);
+--------------------------------------------------------------------------------------------------------------- */ 
+// OUTSIDE LOOP
+function delete_matching_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$records_array){
+// Check the record exists in zone exactly as specified. If yes return the Safedns ID Number and True, if No just return False
+    echo "Checking if ".$record_type." Record: ".rtrim($record_name, ".")." EXISTS with content ".$record_content." on zone ".$zone_name."\n";
+    foreach ($records_array as $safedns_recordx) {
+        $safedns_record=explode(",",$safedns_recordx);
+        echo "recordarray- ".$safedns_record[0];
+        // 0 - ID
+        // 1 - NAME
+        // 2 - TYPR
+        // 3 - CONTENT
+        if(strcasecmp($safedns_record[2], 'A') == 0){
+	    echo "\nRecord type matches A!\n";
+            if(strcasecmp($safedns_record[1], 'deleteme.chrotek.tk') == 0){
+                echo "Record name matches deleteme.chrotek.tk\n";
+                if(strcasecmp($safedns_record[3], '1.2.3.4') == 0){
+                    echo "Record content matches 1.2.3.4\n";
+                    echo "The matching record's ID is ".$safedns_record[0];
+                }
+            }
+        }
+
+    }
+//    if(strcasecmp($record_type, 'MX') == 0){
+//        echo "Record type matches MX! 
+       
+}
+
+// INSIDE LOOP - Delete function
+
+//$rrCount=0;
+//foreach ($data['zone']['rr'] as $variablerr) {
+//    check_record_exists_safedns($api_url,$data['zone']['name'],$variablerr['host'],$variablerr['type'],$variablerr['value'],$variablerr['opt']);
+    
+//  For records in zone(plesk input):
+//     - If zone exists
+//         - Get all records from safedns (record name, type, content, id) , store in an array called records_array
+request_safedns_record_for_zone($api_url,"chrotek.tk");
+//         In the delete_matching_record function:
+//                 - For records in array above, match record type.
+//                     - If record type matches, match for record name.
+//                         - If record name matches , match the content too (to be sure we're going to delete the right record)
+//                             - If (record name, type, content) all Match , get the ID from safedns, and use the ID to delete the record . 
+//delete_matching_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$records_array)
+delete_matching_record_safedns($api_url,"chrotek.tk","deleteme.chrotek.tk","A","1.2.3.4",$records_array);
+//     - If zone does not exist
+//         - Do nothing?
+
+//    $rrCount++;
+//        }
+
+
+
+//echo "Test Delete \n";
+//call_SafeDNS_API('DELETE',$api_url."/zones/"."EXAMPLEWIBBLE.COM",false);
 
    // }
 //}
