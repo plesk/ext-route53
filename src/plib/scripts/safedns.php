@@ -244,7 +244,8 @@ switch ($command) :
         echo "---------------------------------------------\n";
         exit(1);
 endswitch;
-
+echo "Test Delete \n";
+call_SafeDNS_API('DELETE',$api_url."/zones/"."EXAMPLEWIBBLE.COM",false);
 
    // }
 //}
