@@ -313,7 +313,7 @@ if ($records_array) {
 }
 
 if (!$records_array) {
-    echo "Records Array Exists!";
+    echo "Records Array DOESNT Exist!";
 }
 
 request_safedns_record_for_zone($api_url,"chrotek.tk");
