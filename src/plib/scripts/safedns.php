@@ -260,27 +260,39 @@ switch ($command) :
 endswitch;
 --------------------------------------------------------------------------------------------------------------- */ 
 // OUTSIDE LOOP
-function delete_matching_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$records_array){
+function find_matching_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$records_array){
 // Check the record exists in zone exactly as specified. If yes return the Safedns ID Number and True, if No just return False
     echo "Checking if ".$record_type." Record: ".rtrim($record_name, ".")." EXISTS with content ".$record_content." on zone ".$zone_name."\n";
+    $testResult = False;
+    $recordID = 'Null';
+    global $test_result_array;
     foreach ($records_array as $safedns_recordx) {
         $safedns_record=explode(",",$safedns_recordx);
-        echo "recordarray- ".$safedns_record[0];
+//        echo "recordarray- ".$safedns_record[0];
         // 0 - ID
         // 1 - NAME
-        // 2 - TYPR
+        // 2 - TYPE
         // 3 - CONTENT
-        if(strcasecmp($safedns_record[2], 'A') == 0){
-	    echo "\nRecord type matches A!\n";
-            if(strcasecmp($safedns_record[1], 'deleteme.chrotek.tk') == 0){
-                echo "Record name matches deleteme.chrotek.tk\n";
+        if(strcasecmp($safedns_record[2], $record_type) == 0){
+//            echo "\nRecord type matches !\n";
+            if(strcasecmp($safedns_record[1], $record_name) == 0){
+//                echo "Record name matches \n";
                 if(strcasecmp($safedns_record[3], '1.2.3.4') == 0){
-                    echo "Record content matches 1.2.3.4\n";
-                    echo "The matching record's ID is ".$safedns_record[0];
+//                    echo "Record content matches \n";
+//                    echo "\n \n The matching record's ID is ".$safedns_record[0]."\n";
+//                    call_SafeDNS_API('DELETE',$api_url."/zones/".$zone_name."/records/".$safedns_record[0], false);
+                    $testResult = True;
+//                    echo "TestResult set to \n";
+//                    echo var_dump($testResult);
+                    $recordID = $safedns_record[0];
+//                    break;
                 }
             }
         }
-
+        $test_result_array=(array('testResult' => $testResult, 'recordID' => $recordID));
+//        echo "Resultreturn Array for ".$safedns_record[1]."\n";
+//        echo var_dump($test_result_array);
+//        return $test_result_array;
     }
 //    if(strcasecmp($record_type, 'MX') == 0){
 //        echo "Record type matches MX! 
@@ -296,6 +308,14 @@ function delete_matching_record_safedns($api_url,$zone_name,$record_name,$record
 //  For records in zone(plesk input):
 //     - If zone exists
 //         - Get all records from safedns (record name, type, content, id) , store in an array called records_array
+if ($records_array) {
+    echo "Records Array Exists!";
+}
+
+if (!$records_array) {
+    echo "Records Array Exists!";
+}
+
 request_safedns_record_for_zone($api_url,"chrotek.tk");
 //         In the delete_matching_record function:
 //                 - For records in array above, match record type.
@@ -303,7 +323,32 @@ request_safedns_record_for_zone($api_url,"chrotek.tk");
 //                         - If record name matches , match the content too (to be sure we're going to delete the right record)
 //                             - If (record name, type, content) all Match , get the ID from safedns, and use the ID to delete the record . 
 //delete_matching_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$records_array)
-delete_matching_record_safedns($api_url,"chrotek.tk","deleteme.chrotek.tk","A","1.2.3.4",$records_array);
+//find_matching_record_safedns($api_url,"chrotek.tk","deleteme.chrotek.tk","A","1.2.3.4",$records_array);
+//echo var_dump($records_array);
+
+find_matching_record_safedns($api_url,"chrotek.tk","deleteme.chrotek.tk","A","1.2.3.4",$records_array);
+
+echo "\nMatch test:\n  ";
+echo var_dump($test_result_array);
+
+echo "\nMatch test BOOL :\n  ";
+echo var_dump($test_result_array['testResult']);
+
+echo "\nMatch test ID   :\n  ";
+echo var_dump($test_result_array['recordID']);
+
+echo "\nMatched Record: \n  ";
+
+if ($test_result_array['testResult']) {
+    echo "Match TRUE\n";
+}
+
+if (!$test_result_array['testResult']) {
+    echo "Match FALSE\n";
+}
+//echo "END MATCHES\n";
+//echo var_dump(find_matching_record_safedns($api_url,"chrotek.tk","deleteme.chrotek.tk","A","1.2.3.4",$records_array));
+
 //     - If zone does not exist
 //         - Do nothing?
 
