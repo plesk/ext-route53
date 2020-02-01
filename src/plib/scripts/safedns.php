@@ -70,8 +70,11 @@ $data = json_decode(file_get_contents('php://stdin'));
 
 To do list
 
-- Change results per page when querying record
 
+CURRENT LIMITS
+- We can only handle 50 Domains, and 50 records per domain.
+    - To resolve this limitation, we need to write code to handle multiple pages in the safedns responses.
+    - This should go into the functions request_safedns_zones and request_safedns_record_for_zone , in leiu of the current url parameter "?per_page=50"
 */
 
 //$data = json_decode(file_get_contents('php://stdin'));
@@ -130,7 +133,7 @@ $api_url="https://api.ukfast.io/safedns/v1";
 $safedns_domains=array();
 $records_array='NULL';
 function request_safedns_zones($api_url){
-    $get_data = call_SafeDNS_API('GET',$api_url."/zones",false);
+    $get_data = call_SafeDNS_API('GET',$api_url."/zones?per_page=50",false);
     $response = json_decode($get_data, true);
     $data = $response;
     $safedns_domains=array();
@@ -152,21 +155,24 @@ function request_safedns_zones($api_url){
 }
 
 function request_safedns_record_for_zone($api_url,$zone_name){
-    $get_data = call_SafeDNS_API('GET',$api_url."/zones/".$zone_name."/records",false);
+    $get_data = call_SafeDNS_API('GET',$api_url."/zones/".$zone_name."/records?per_page=50",false);
     $response = json_decode($get_data, true);
     $data = $response;
     global $records_array;
     $records_array = array();
+//    echo var_dump($data);
     foreach ($data['data'] as $val) {
     /* echo "ID : " .$val['id']."\n";
        echo "NAME : ".$val['name']."\n";
        echo "TYPE : ".$val['type']."\n";
        echo "CONTENT : ".$val['content']."\n";         */
-       array_push($records_array,$val['id'].",".$val['name'].",".$val['type'].",".$val['content']);
+        if(strcasecmp($val['type'], 'MX') == 0){
+            array_push($records_array,$val['id'].",".$val['name'].",".$val['type'].",".$val['content'].",".$val['priority']);
+        } else { 
+            array_push($records_array,$val['id'].",".$val['name'].",".$val['type'].",".$val['content']);
     }
-    return $records_array;
+//    return $records_array;
 }
-
 function check_create_zone($api_url,$safedns_domains,$input_zone){
 
     if (in_array($input_zone, $safedns_domains))
@@ -209,40 +215,85 @@ function create_record($api_url,$zone_name,$record_name,$record_type,$record_con
     call_SafeDNS_API('POST',$api_url."/zones/".$zone_name."/records", json_encode($postdata));
 }
 
-function find_matching_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$records_array){
+function find_matching_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$record_opt,$records_array){
 // Check the record exists in zone exactly as specified. If yes return the Safedns ID Number and True, if No just return False
-    echo "Checking if ".$record_type." Record: ".rtrim($record_name, ".")." EXISTS with content ".$record_content." on zone ".$zone_name."\n";
+    echo "Checking if ".$record_type." Record: ".rtrim($record_name, ".")." EXISTS with content ".rtrim($record_content, ".")." on zone ".$zone_name."\n";
     $testResult = 'NoMatch';
     $recordID = 'Null';
     global $test_result_array;
+//    echo "ARRAY123".var_dump($records_array)."\n";
     foreach ($records_array as $safedns_recordx) {
         $safedns_record=explode(",",$safedns_recordx);
-        // 0 - ID , 1 - NAME , 2 - TYPE , 3 - CONTENT
+//        echo var_dump($safedns_record)."\n";
+//        echo "SAFEDNSRecord123 \n";
+//        echo var_dump($safedns_record)."\n";
+        // 0 - ID , 1 - NAME , 2 - TYPE , 3 - CONTENT, 4 - OPT
+
+                // SAFEDNS API Doesn't support certain record types. Set result to IncompatibleType
+        if (strcasecmp($record_type , 'PTR') == 0) {
+            //echo "SAFEDNS API Doesn't support ".$safedns_record[2]." Records. Please contact support";
+//            echo "Incompatible Type!!!\n";
+            $testResult = 'IncompatibleType';
+            $recordID = $safedns_record[0];
+            break;
+            }
 	// Find Match for Record Type
         if(strcasecmp($safedns_record[2], $record_type) == 0){
+//            echo "TYPE MATCHED\n";
+//            echo "NameCheck\n";
+//            echo $safedns_record[1]."\n";
+//            echo $record_name."\n";
             // Find match for Record Name   
-            if(strcasecmp($safedns_record[1], $record_name) == 0){
-                 // Record has matched Type and Name
-                 $testResult = 'TypeNameMatch';
-                // Find Match for Record Content
-                if(strcasecmp($safedns_record[3] , '1.2.3.4') == 0){
-                    // Record has perfectly matched
-                    $testResult = 'FullMatch';
-                    $recordID = $safedns_record[0];
+            if(strcasecmp(rtrim($safedns_record[1],"."), rtrim($record_name,".")) == 0){
+//                echo "NAME MATCHED\n";
+                // Record has matched Type and Name
+                $testResult = 'TypeNameMatch';
+                $recordID = $safedns_record[0];
+                // If TXT Record, add quotes for safedns reqs, and Find Match for Record Content
+                if(strcasecmp($safedns_record[2] , 'TXT') == 0){
+                    if(strcasecmp(rtrim($safedns_record[3], ".") , '"'.rtrim($record_content.'"', ".")) == 0){
+//                        echo "MX Matched";
+                        $testResult = 'FullMatch';
+                        $recordID = $safedns_record[0];
+                        break;    
+                    }
                 }
+                // Else, Find Match for Record Content
+//                echo "Looking for content match";
+                if(strcasecmp(rtrim($safedns_record[3], ".") , rtrim($record_content, ".")) == 0){
+                    // If MX Record, Also check priority
+                    if(strcasecmp($safedns_record[2] , 'MX') == 0){
+//                        echo "MX Check";  
+                        if(strcasecmp($safedns_record[4] , $record_opt) == 0){
+                            $testResult = 'FullMatch';
+                            $recordID = $safedns_record[0];
+                            break;
+                        }
+                    // If record type doesn't need extra checks, FullMatch
+                    } else {
+                        $testResult = 'FullMatch';
+                        $recordID = $safedns_record[0];
+                        break;
+                    }            
+                    // Record has perfectly matched
+                    //$testResult = 'FullMatch';
+                    //$recordID = $safedns_record[0];
+                }
+
             }
         }
-        $test_result_array=(array('testResult' => $testResult, 'recordID' => $recordID));
-    }
+    } 
+    $test_result_array=(array('testResult' => $testResult, 'recordID' => $recordID));
 
 }
 
 
 function delete_matched_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$records_array) {
-    if (strcasecmp($records_array, 'NULL') == 0) {
+    if (strcasecmp(var_dump($records_array), 'NULL') == 0) {
         echo "Records Array DOESNT Exist! Retrieving.\n";
         global $records_array;
         request_safedns_record_for_zone($api_url,$zone_name);
+    }
     global $test_result_array;
     find_matching_record_safedns($api_url,$zone_name,$record_name,$record_type,$record_content,$records_array);
 
@@ -289,26 +340,72 @@ switch ($command) :
     case 'create':
     case 'update':
         echo "UPDATE COMMAND\n";
-        // If zone does not exist, create it
+        if (strcasecmp($records_array, 'NULL') == 0) {
+            echo "Records Array DOESNT Exist! Retrieving.\n";
+            global $records_array;
+            request_safedns_record_for_zone($api_url,$data['zone']['name']);
+        };
+       // If zone does not exist, create it
         check_create_zone($api_url,$safedns_domains,$data['zone']['name']);
 
         $rrCount=0;
         // For records in zone:
         foreach ($data['zone']['rr'] as $variablerr) {
-
+        // PLESK VARIABLES: 
+        // - Zone Name ------- $data['zone']['name']
+        // - Record Name ----- $variablerr['host']
+        // - Record Type ----- $variablerr['type']
+        // - Record Content -- $variablerr['value']
+        // - MX Priority etc - $variablerr['opt']
+        // 
+        // SAFEDNS VARIABLES:
+        // - Zone Name ------- 
+        // - Record Name ----- 
+        // - Record Type ----- 
+        // - Record Content -- 
+        // - MX Priority etc -
+ 
         //     - If record exists with matching NAME, TYPE and CONTENT, no changes needed. (continue instead of break)
-        
-        //     - Check if record is present in safedns (Match NAME and TYPE)
 
-        //     - If record is not present at all, create it. (Match NONE)
-            create_record($api_url,$data['zone']['name'],$variablerr['host'],$variablerr['type'],$variablerr['value'],$variablerr['opt']); 
+            global $test_result_array;
+            find_matching_record_safedns($api_url,$data['zone']['name'],$variablerr['host'],$variablerr['type'],$variablerr['value'],$variablerr['opt'],$records_array);
 
-        //     - If record is present and TYPE is NOT MX, check if CONTENT has changed ,and update if yes. (Match NAME and TYPE, but NOT CONTENT.
+//            echo "Test result is: ".var_dump($test_result_array);
 
-        //     - If record is present and TYPE IS MX, check if CONTENT or PRIORITY has changed  ,and update if yes. (Match NAME and TYPE, but NOT CONTENT and/or PRIORITY)
+            if (strcasecmp($test_result_array['testResult'], 'FullMatch') == 0) {
+                echo "Record already Exists, No changes nescessary : id- ".$test_result_array['recordID']."zone- ".$data['zone']['name']." name- ".$variablerr['host']." type- ".$variablerr['type']." content- ".$variablerr['value']."\n";
+                //continue 2;
+            
+        //     - Check if record is present in safedns , but content has changed. (Match NAME and TYPE)
+            } elseif (strcasecmp($test_result_array['testResult'], 'TypeNameMatch') == 0) {
+                echo "Record already Exists, but content needs to be changed : id- ".$test_result_array['recordID']."zone- ".$data['zone']['name']." name- ".$variablerr['host']." type- ".$variablerr['type']." content- ".$variablerr['value']."\n";
+                if(strcasecmp($variablerr['type'] , 'MX') == 0){
+                $postdata = array(
+                    'name' => rtrim($variablerr['host'], "."),
+                    'type' => $variablerr['type'],
+                    'content' => rtrim($variablerr['value'], "."),   // $variablerr['type']
+                    'priority' => $variablerr['opt']);
+                } else {
+                $postdata = array(
+                    'name' => rtrim($variablerr['host'], "."),
+                    'type' => $variablerr['type'],
+                    'content' => rtrim($variablerr['value'], "."));   // $variablerr['type']
+                }
+                call_SafeDNS_API('PATCH',$api_url."/zones/".$data['zone']['name']."/records/".$test_result_array['recordID'], json_encode($postdata));
+                //continue 2;
+            } elseif (strcasecmp($test_result_array['testResult'], 'IncompatibleType') == 0) {
+                echo "SAFEDNS API Doesn't support ".$variablerr['type']." Records. Please contact support \n";
+            } elseif (strcasecmp($test_result_array['testResult'], 'NoMatch') == 0) {
+                // If no records match. Create the record
+                create_record($api_url,$data['zone']['name'],$variablerr['host'],$variablerr['type'],$variablerr['value'],$variablerr['opt']);
+
+            } else {
+                echo "ERROR. testResult was ".$test_result_array['testResult']." and the script doesn't know how to handle that\n";
+            }  
 
         //     - If record is present in safedns, but has been removed from plesk, delete it from SafeDNS
             $rrCount++;
+            echo "\n";
         }
         break;
     case 'delete':
@@ -320,7 +417,7 @@ switch ($command) :
 
         echo "DELETE COMMAND\n";
         // Delete a zone
-        call_SafeDNS_API('DELETE',$api_url."/zones/".$zoneName,false);
+        call_SafeDNS_API('DELETE',$api_url."/zones/".$data['zone']['name'],false);
         break;
     default:
         echo "Unknown Command : ".$command." !! \n";
@@ -359,7 +456,7 @@ endswitch;
 //echo var_dump($records_array);
 
 //find_matching_record_safedns($api_url,"chrotek.tk","deleteme.chrotek.tk","A","1.2.3.4",$records_array);
-delete_matched_record_safedns($api_url,"chrotek.tk","deleteme.chrotek.tk","A","1.2.3.4",$records_array);
+//delete_matched_record_safedns($api_url,"chrotek.tk","deleteme.chrotek.tk","A","1.2.3.4",$records_array);
 
 //if ($test_result_array['testResult']) {
 //    echo "Match TRUE\n";

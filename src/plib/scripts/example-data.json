@@ -5,7 +5,7 @@
     {"host": "ftp.examplewibble.com.", "displayHost": "ftp.examplewibble.com.", "type": "CNAME", "displayValue": "examplewibble.com.", "opt": "", "value": "examplewibble.com."},
     {"host": "ipv4.examplewibble.com.", "displayHost": "ipv4.examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"},
     {"host": "mail.examplewibble.com.", "displayHost": "mail.examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"},
-    {"host": "examplewibble.com.", "displayHost": "examplewibble.com.", "type": "MX", "displayValue": "mail.examplewibble.com.", "opt": "10", "value": "mail.examplewibble.com."},
+    {"host": "examplewibble.com.", "displayHost": "examplewibble.com.", "type": "MX", "displayValue": "mail.examplewibble.com.", "opt": "12", "value": "mail.examplewibble.com."},
     {"host": "webmail.examplewibble.com.", "displayHost": "webmail.examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"},
     {"host": "examplewibble.com.", "displayHost": "examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"},
     {"host": "ns.examplewibble.com.", "displayHost": "ns.examplewibble.com.", "type": "A", "displayValue": "1.2.3.4", "opt": "", "value": "1.2.3.4"}
