@@ -18,7 +18,7 @@ class Modules_Route53_Logger
 
     public function err($message)
     {
-        $this->log('err ', $message);
+        $this->log('err', $message);
         static::pushErrorMessage($message);
     }
 
