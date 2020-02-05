@@ -8,17 +8,17 @@ class Modules_Route53_Logger
 
     public function info($message)
     {
-        $this->log('INFO', $message);
+        $this->log('info', $message);
     }
 
     public function warn($message)
     {
-        $this->log('WARN', $message);
+        $this->log('warn', $message);
     }
 
     public function err($message)
     {
-        $this->log('ERR ', $message);
+        $this->log('err ', $message);
         static::pushErrorMessage($message);
     }
 
@@ -34,11 +34,6 @@ class Modules_Route53_Logger
     public function hasErrors()
     {
         return !empty($this->log['err']);
-    }
-
-    public static function clear()
-    {
-        pm_Settings::set('errorMessages', '');
     }
 
     public static function getErrorMessages()

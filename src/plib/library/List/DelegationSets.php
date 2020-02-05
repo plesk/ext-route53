@@ -51,7 +51,7 @@ class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
             $ipAddresses = array_map('gethostbyname', $nameServers);
             $urlId = urlencode($delegationsSetId);
             $isDefault = $delegationsSetId == pm_Settings::get('delegationSet');
-			$limit = Modules_Route53_Client::factory()->getDelegationSetLimit($delegationsSetId);
+            $limit = Modules_Route53_Client::factory()->getDelegationSetLimit($delegationsSetId);
             $data[] = [
                 'nameServers' => implode("<br>", $nameServers),
                 'ipAddresses' => implode("<br>", $ipAddresses),
@@ -67,7 +67,7 @@ class Modules_Route53_List_DelegationSets extends pm_View_List_Simple
                     "<span>" . $this->lmsg('deleteDelegationSetButton') . "</span>" .
                     "</a>",
                 ]),
-				'info' => "Id: " . htmlentities($delegationsSetId) . "<br>" . $this->lmsg('delegationSetLimit') . ": " . $limit->currentCount . " / " . $limit->maxCount,
+                'info' => "Id: " . htmlentities($delegationsSetId) . "<br>" . $this->lmsg('delegationSetLimit') . ": " . $limit->currentCount . " / " . $limit->maxCount,
             ];
         }
         return $data;

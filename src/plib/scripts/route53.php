@@ -76,9 +76,6 @@ $data = json_decode(file_get_contents('php://stdin'));
 
 $log = new Modules_Route53_Logger();
 
-//Clear existing errors to prevent overflow (As it is implemented as setting and its max-length is 5000 chars)
-$log->clear();
-
 foreach ($data as $record) {
 
     $zoneName = $record->zone->name;
@@ -281,6 +278,5 @@ foreach ($data as $record) {
     }
 }
 if ($log->hasErrors()) {
-	fwrite(STDERR, "\n\nError updating DNS:\n" . $log->getErrorMessages());
     exit(255);
 }
