@@ -58,4 +58,11 @@ $messages = array(
     'cliClearSuccess' => 'Authentication token was cleared.',
     'cliValidationFailed' => 'Validation failed.',
     'login' => 'Log in',
+    'managedDomainsTitle' => 'Managed Domains',
+    'managedDomainColumn' => 'Managed Domain',
+    'managedDomainLabel' => 'Managed Domain',
+    'createManagedDomainButton' => 'Create Managed Domain',
+    'createManagedDomainHint' => 'Create Managed Domain to handle Subdomains not registered in Plesk',
+    'deleteManagedDomainButton' => 'Delete Managed Domain',
+    'managedDomainCreated' => 'Managed Domain created',
 );

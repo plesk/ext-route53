@@ -52,11 +52,50 @@ class IndexController extends pm_Controller_Action
                 'action' => 'delegation-set',
             ];
             $tabs[] = [
+                'title' => $this->lmsg('managedDomainsTitle'),
+                'action' => 'managed-domain'
+            ];
+            $tabs[] = [
                 'title' => $this->lmsg('toolsTitle'),
                 'action' => 'tools',
             ];
         }
         return $tabs;
+    }
+
+    public function managedDomainAction()
+    {
+        $this->view->list = new Modules_Route53_List_ManagedDomains($this->view, $this->getRequest());
+        $this->view->tabs = $this->_getTabs();
+    }
+
+    public function createManagedDomainAction()
+    {
+        $form = new Modules_Route53_Form_ManagedDomains();
+
+        if ($this->getRequest()->isPost() && $form->isValid($this->getRequest()->getPost())) {
+            try {
+                $form->process();
+                $this->_status->addMessage('info', $this->lmsg('managedDomainCreated'));
+            } catch (Exception $e) {
+                $this->_status->addMessage('error', $e->getMessage());
+            }
+            $this->_helper->json(array('redirect' => $this->_helper->url('managed-domain')));
+        }
+
+        $this->view->pageTitle = $this->lmsg('createManagedDomainButton');
+        $this->view->form = $form;
+    }
+
+    public function deleteManagedDomainAction()
+    {
+        if (!$this->getRequest()->isPost()) {
+            throw new pm_Exception('Permission denied');
+        }
+
+        Modules_Route53_Settings::removeManagedDomainById((int)$this->_getParam('id'));
+
+        $this->_redirect('index/managed-domain');
     }
 
     public function delegationSetAction()
