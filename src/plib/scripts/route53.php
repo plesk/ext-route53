@@ -76,7 +76,6 @@ $data = json_decode(file_get_contents('php://stdin'));
 
 $log = new Modules_Route53_Logger();
 $ipAddresses = getIpAddresses();
-$flushedZones = [];
 
 foreach ($data as $record) {
     $zoneName = $realZoneName = $record->zone->name;
@@ -126,14 +125,22 @@ foreach ($data as $record) {
                 $zoneId = $model['HostedZone']['Id'];
 
             } else {
-                // Make sure that entries for a zone are only flushed once
-                // Otherwise records for managed domains will be overridden
-                if (!in_array($zoneId, $flushedZones)) {
-                    /**
-                     * Zone exists, remove old Resource Records
-                     */
-                    $changes = $client->getHostedZoneRecordsToDelete($zoneId);
-                    $flushedZones[] = $zoneId;
+                try {
+                    $result = $client->listResourceRecordSets([
+                        'HostedZoneId' => substr($zoneId, 12)
+                    ])->toArray();
+
+                    foreach ($result['ResourceRecordSets'] as $resourceRecordSet) {
+                        $existingResources[] = [
+                            'Name' => $resourceRecordSet['Name'],
+                            'Type' => $resourceRecordSet['Type'],
+                            'TTL' => $resourceRecordSet['TTL'],
+                            'ResourceRecords' => $resourceRecordSet['ResourceRecords']
+                        ];
+                    }
+                } catch (Modules_Route53_Exception $e) {
+                    $log->err("Zone {$zoneName} not found: {$e->getMessage()}\n");
+                    continue 2;
                 }
             }
 
@@ -216,7 +223,7 @@ foreach ($data as $record) {
 
             // Remove changes that already exist
             foreach ($changes as $key => $change) {
-                if (in_array($change, $existingResources, true)) {
+                if (in_array($change['ResourceRecordSet'], $existingResources, true)) {
                     unset($changes[$key]);
                 }
             }
