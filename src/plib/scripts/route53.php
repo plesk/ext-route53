@@ -301,8 +301,10 @@ function getIpAddresses()
     $addressInfos = $ipResponse->xpath('/packet/ip/get/result/addresses/ip_info');
 
     foreach ($addressInfos as $addressInfo) {
-        $address = (string)$addressInfo->ip_address;
-        $addresses[$address] = strpos($address, '.') ? 'A' : 'AAAA';
+        $address = (string)$addressInfo->public_ip_address;
+        if ($address) {
+            $addresses[$address] = strpos($address, '.') ? 'A' : 'AAAA';
+        }
     }
 
     return $addresses;
