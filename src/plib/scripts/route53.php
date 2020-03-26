@@ -131,11 +131,14 @@ foreach ($data as $record) {
                     ])->toArray();
 
                     foreach ($result['ResourceRecordSets'] as $resourceRecordSet) {
-                        $existingResources[] = [
-                            'Name' => $resourceRecordSet['Name'],
-                            'Type' => $resourceRecordSet['Type'],
-                            'TTL' => $resourceRecordSet['TTL'],
-                            'ResourceRecords' => $resourceRecordSet['ResourceRecords']
+                        $existingResources["CREATE {$resourceRecordSet['Name']} {$resourceRecordSet['Type']}"] = [
+                            'Action' => 'CREATE',
+                            'ResourceRecordSet' => [
+                                'Name' => $resourceRecordSet['Name'],
+                                'Type' => $resourceRecordSet['Type'],
+                                'TTL' => $resourceRecordSet['TTL'],
+                                'ResourceRecords' => $resourceRecordSet['ResourceRecords']
+                            ]
                         ];
                     }
                 } catch (Modules_Route53_Exception $e) {
@@ -146,10 +149,6 @@ foreach ($data as $record) {
 
             if ($realZoneName !== $zoneName) {
                 foreach ($ipAddresses as $ipAddress => $type) {
-                    if ($existingResources[$realZoneName] === $type) {
-                        continue;
-                    }
-
                     $changes["CREATE {$realZoneName} {$type}"] = [
                         'Action' => 'CREATE',
                         'ResourceRecordSet' => [
@@ -221,10 +220,24 @@ foreach ($data as $record) {
                 continue 2;
             }
 
+            $hostedZoneRecordsToDelete = $client->getHostedZoneRecordsToDelete($zoneId);
+
             // Remove changes that already exist
             foreach ($changes as $key => $change) {
-                if (in_array($change['ResourceRecordSet'], $existingResources, true)) {
-                    unset($changes[$key]);
+                if ($existingResourceRecordSet = $existingResources[$key]) {
+                    if ($existingResourceRecordSet !== $change) {
+                        $hostedZoneRecordToDelete = getRecordSetFromRecordSets(
+                            $hostedZoneRecordsToDelete,
+                            $change['ResourceRecordSet']['Name'],
+                            $change['ResourceRecordSet']['Type']
+                        );
+
+                        if ( $hostedZoneRecordToDelete['ResourceRecordSet'] !== $change['ResourceRecordSet']) {
+                            array_unshift($changes, $hostedZoneRecordToDelete);
+                        }
+                    } else {
+                        unset($changes[$key]);
+                    }
                 }
             }
 
@@ -289,6 +302,20 @@ foreach ($data as $record) {
             $log->info("Zone deleted: {$zoneName}\n");
             break;
     }
+}
+
+function getRecordSetFromRecordSets($recordSets, $name, $type)
+{
+    foreach ($recordSets as $recordSet) {
+        if (
+            $recordSet['ResourceRecordSet']['Name'] === $name
+            && $recordSet['ResourceRecordSet']['Type'] === $type
+        ) {
+            return $recordSet;
+        }
+    }
+
+    return [];
 }
 
 function getIpAddresses()
