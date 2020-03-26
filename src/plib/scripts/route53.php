@@ -75,23 +75,29 @@ $data = json_decode(file_get_contents('php://stdin'));
 //]
 
 $log = new Modules_Route53_Logger();
+$ipAddresses = getIpAddresses();
+$flushedZones = [];
 
 foreach ($data as $record) {
+    $zoneName = $realZoneName = $record->zone->name;
+    $existingResources = [];
 
-    $zoneName = $record->zone->name;
+    if ($managedDomain = Modules_Route53_Settings::getManagedDomainOfSubdomain($zoneName)) {
+        $zoneName = $managedDomain;
+    }
+
     $recordsTTL = $record->zone->soa->ttl;
+
+    //AWS Route 53 does not use uppercase letters
+    $zoneId = $client->getZoneId(strtolower($zoneName));
     switch ($record->command) {
         /**
          * Zone created or updated
          */
         case 'create':
         case 'update':
-            //AWS Route 53 does not use uppercase letters
-            $zoneId = $client->getZoneId(strtolower($zoneName));
-
             $changes = [];
             if (!$zoneId) {
-
                 /**
                  * Zone not exists on AWS Route 53, create
                  */
@@ -120,20 +126,44 @@ foreach ($data as $record) {
                 $zoneId = $model['HostedZone']['Id'];
 
             } else {
+                // Make sure that entries for a zone are only flushed once
+                // Otherwise records for managed domains will be overridden
+                if (!in_array($zoneId, $flushedZones)) {
+                    /**
+                     * Zone exists, remove old Resource Records
+                     */
+                    $changes = $client->getHostedZoneRecordsToDelete($zoneId);
+                    $flushedZones[] = $zoneId;
+                }
+            }
 
-                /**
-                 * Zone exists, remove old Resource Records
-                 */
-                $changes = $client->getHostedZoneRecordsToDelete($zoneId);
+            if ($realZoneName !== $zoneName) {
+                foreach ($ipAddresses as $ipAddress => $type) {
+                    if ($existingResources[$realZoneName] === $type) {
+                        continue;
+                    }
+
+                    $changes["CREATE {$realZoneName} {$type}"] = [
+                        'Action' => 'CREATE',
+                        'ResourceRecordSet' => [
+                            'Name' => $realZoneName,
+                            'Type' => $type,
+                            'TTL' => $recordsTTL,
+                            'ResourceRecords' => [
+                                [
+                                    'Value' => $ipAddress
+                                ]
+                            ],
+                        ]
+                    ];
+                }
             }
 
             /**
              * Add Resource records to zone
              */
-
             foreach($record->zone->rr as $rr) {
-
-                if (!in_array($rr->type, $client->getConfig()['supportedTypes'])) {
+                if (!in_array($rr->type, $client->getConfig()['supportedTypes']) || $realZoneName !== $zoneName) {
                     continue;
                 }
 
@@ -184,6 +214,13 @@ foreach ($data as $record) {
                 continue 2;
             }
 
+            // Remove changes that already exist
+            foreach ($changes as $key => $change) {
+                if (in_array($change, $existingResources, true)) {
+                    unset($changes[$key]);
+                }
+            }
+
             /**
              * Apply zone modification
              */
@@ -192,7 +229,7 @@ foreach ($data as $record) {
                     $client->changeResourceRecordSets(array(
                         'HostedZoneId' => $zoneId,
                         'ChangeBatch'  => array(
-                            'Changes' => $changes,
+                            'Changes' => $changes
                         ),
                     ));
                 }
@@ -206,10 +243,7 @@ foreach ($data as $record) {
             break;
 
         case 'delete':
-            //AWS Route 53 does not use uppercase letters
-            $zoneId = $client->getZoneId(strtolower($zoneName));
-
-            if (!$zoneId) {
+            if (!$zoneId || $realZoneName !== $zoneName) {
                 continue 2;
             }
 
@@ -248,6 +282,23 @@ foreach ($data as $record) {
             $log->info("Zone deleted: {$zoneName}\n");
             break;
     }
+}
+
+function getIpAddresses()
+{
+    $addresses = [];
+    $ipRequest = '<ip><get></get></ip>';
+
+    $api = pm_ApiRpc::getService();
+    $ipResponse = $api->call($ipRequest);
+    $addressInfos = $ipResponse->xpath('/packet/ip/get/result/addresses/ip_info');
+
+    foreach ($addressInfos as $addressInfo) {
+        $address = (string)$addressInfo->ip_address;
+        $addresses[$address] = strpos($address, '.') ? 'A' : 'AAAA';
+    }
+
+    return $addresses;
 }
 
 if ($log->hasErrors()) {

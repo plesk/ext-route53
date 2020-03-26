@@ -235,7 +235,7 @@ class IndexController extends pm_Controller_Action
             if (!isset($domain->id)) {
                 continue;
             }
-            $res[] = $domain->data->gen_info->name;
+            $res[] = $domain->data->gen_info->name . '.';
         }
 
         return $res;
@@ -253,20 +253,19 @@ class IndexController extends pm_Controller_Action
             $response = pm_Domain::getAllDomains();
             foreach ($response as $data) {
                 $domainName = $data->getName();
-                $domains[] = $domainName;
+                $domains[] = $domainName . '.';
             }
         } else {
             $domains = $this->getDomainListApi();
         }
 
         $domainAliases = $this->getDomainAliasListApi();
-        $domains = array_merge($domains, $domainAliases);
+        $domains = array_merge($domains, $domainAliases, Modules_Route53_Settings::getManagedDomains());
 
         $client = Modules_Route53_Client::factory();
         $hostedZones = $client->getZones();
 
         foreach ($hostedZones as $zoneDomain => $zoneId) {
-            $zoneDomain = trim($zoneDomain, '.');
             if (!in_array($zoneDomain, $domains)) {
                 continue;
             }
@@ -280,6 +279,11 @@ class IndexController extends pm_Controller_Action
                     ],
                 ]);
             }
+
+            if (Modules_Route53_Settings::isManagedDomain($zoneDomain)) {
+                continue;
+            }
+
             $client->deleteHostedZone([
                 'Id' => $zoneId,
             ]);
