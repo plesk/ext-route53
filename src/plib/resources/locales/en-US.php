@@ -64,5 +64,8 @@ $messages = array(
     'createManagedDomainButton' => 'Create Managed Domain',
     'createManagedDomainHint' => 'Create Managed Domain to handle Subdomains not registered in Plesk',
     'deleteManagedDomainButton' => 'Delete Managed Domain',
+    'managedDomainModeLabel' => 'Mode',
     'managedDomainCreated' => 'Managed Domain created',
+    'modeColumn' => 'Mode',
+    'managedDomainsModeARecordWithServerAddress' => 'A-Record with Server Address',
 );

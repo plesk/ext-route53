@@ -93,7 +93,7 @@ class IndexController extends pm_Controller_Action
             throw new pm_Exception('Permission denied');
         }
 
-        Modules_Route53_Settings::removeManagedDomainById((int)$this->_getParam('id'));
+        Modules_Route53_Settings::removeManagedDomainById($this->_getParam('id'));
 
         $this->_redirect('index/managed-domain');
     }

@@ -8,6 +8,8 @@
  */
 class Modules_Route53_Settings
 {
+    const MANAGE_DOMAIN_MODE_A_RECORD_WITH_SERVER_ADDRESS = 'ARecordWithServerAddress';
+
     /**
      * Returns managedDomains from Plesk Settings
      *
@@ -18,7 +20,7 @@ class Modules_Route53_Settings
         $managedDomains = [];
 
         if ($managedDomainsSetting = pm_Settings::get('managedDomains')) {
-            $managedDomains = explode(',', $managedDomainsSetting);
+            $managedDomains = json_decode($managedDomainsSetting, true);
         }
 
         return $managedDomains;
@@ -31,27 +33,31 @@ class Modules_Route53_Settings
      */
     public static function setManagedDomains($managedDomains)
     {
-        pm_Settings::set('managedDomains', implode(',', $managedDomains));
+        pm_Settings::set('managedDomains', json_encode($managedDomains));
     }
 
     /**
      * Adds managed domain to managedDomains in Plesk Settings
      *
      * @param string $managedDomain
+     * @param string $mode
      */
-    public static function addManagedDomain($managedDomain)
+    public static function addManagedDomain($managedDomain, $mode = self::MANAGE_DOMAIN_MODE_A_RECORD_WITH_SERVER_ADDRESS)
     {
         $managedDomains = self::getManagedDomains();
         $managedDomain = strtolower($managedDomain);
         $managedDomain = substr($managedDomain, -1) === '.' ? $managedDomain : $managedDomain . '.';
-        $managedDomains[] = $managedDomain;
+        $managedDomains[base64_encode($managedDomain)] = [
+            'name' => $managedDomain,
+            'mode' => $mode
+        ];
         self::setManagedDomains($managedDomains);
     }
 
     /**
      * Remove managedDomain from managedDomains in Plesk Settings
      *
-     * @param int $id
+     * @param string $id
      */
     public static function removeManagedDomainById($id)
     {
@@ -77,7 +83,7 @@ class Modules_Route53_Settings
         $parts = array_reverse(array_filter(explode('.', $subdomain)));
         $domain = $parts[1] . '.' . $parts[0] . '.';
 
-        return in_array($domain, $managedDomains, true) ? $domain : '';
+        return $managedDomains[base64_encode($domain)] ? $domain : '';
     }
 
     /**
@@ -88,6 +94,6 @@ class Modules_Route53_Settings
      */
     public static function isManagedDomain($domain)
     {
-        return in_array($domain, self::getManagedDomains(), true);
+        return self::getManagedDomains()[base64_encode($domain)];
     }
 }

@@ -20,6 +20,18 @@ class Modules_Route53_Form_ManagedDomains extends pm_Form_Simple
             ],
         ]);
 
+        $this->addElement('radio', 'mode', [
+            'label' => pm_Locale::lmsg('managedDomainModeLabel'),
+            'required' => true,
+            'multiOptions' => [
+                Modules_Route53_Settings::MANAGE_DOMAIN_MODE_A_RECORD_WITH_SERVER_ADDRESS
+                => $this->lmsg('managedDomainsMode' . Modules_Route53_Settings::MANAGE_DOMAIN_MODE_A_RECORD_WITH_SERVER_ADDRESS),
+            ],
+            'validators' => [
+                ['NotEmpty', true],
+            ],
+        ]);
+
         $this->addControlButtons([
             'cancelLink' => pm_Context::getBaseUrl(),
         ]);
@@ -27,6 +39,6 @@ class Modules_Route53_Form_ManagedDomains extends pm_Form_Simple
 
     public function process()
     {
-        Modules_Route53_Settings::addManagedDomain($this->getValue('managedDomain'));
+        Modules_Route53_Settings::addManagedDomain($this->getValue('managedDomain'), $this->getValue('mode'));
     }
 }

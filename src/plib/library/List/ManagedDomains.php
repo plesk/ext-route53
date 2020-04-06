@@ -11,6 +11,10 @@ class Modules_Route53_List_ManagedDomains extends pm_View_List_Simple
                 'title' => $this->lmsg('managedDomainColumn'),
                 'noEscape' => true,
             ],
+            'mode' => [
+                'title' => $this->lmsg('modeColumn'),
+                'noEscape' => true,
+            ],
             'actions' => [
                 'title' => $this->lmsg('actionsColumn'),
                 'noEscape' => true,
@@ -36,8 +40,10 @@ class Modules_Route53_List_ManagedDomains extends pm_View_List_Simple
         $data = [];
 
         foreach ($managedDomains as $key => $managedDomain) {
+            $key = urlencode($key);
             $data[] = [
-                'managedDomain' => $managedDomain,
+                'managedDomain' => $managedDomain['name'],
+                'mode' => $this->lmsg('managedDomainsMode' . $managedDomain['mode']),
                 'actions' =>
                     "<a class='s-btn sb-delete' data-method='post'"
                     . " href='{$view->url(['action' => 'delete-managed-domain'])}?id=$key'>"
