@@ -75,7 +75,6 @@ $data = json_decode(file_get_contents('php://stdin'));
 //]
 
 $log = new Modules_Route53_Logger();
-$ipAddresses = getIpAddresses();
 
 foreach ($data as $record) {
     $zoneName = $realZoneName = $record->zone->name;
@@ -126,11 +125,9 @@ foreach ($data as $record) {
 
             } else {
                 try {
-                    $result = $client->listResourceRecordSets([
-                        'HostedZoneId' => substr($zoneId, 12)
-                    ])->toArray();
+                    $resourceRecordSets = $client->getHostedZoneRecordSets(substr($zoneId, 12));
 
-                    foreach ($result['ResourceRecordSets'] as $resourceRecordSet) {
+                    foreach ($resourceRecordSets as $resourceRecordSet) {
                         $existingResources["CREATE {$resourceRecordSet['Name']} {$resourceRecordSet['Type']}"] = [
                             'Action' => 'CREATE',
                             'ResourceRecordSet' => [
@@ -147,29 +144,11 @@ foreach ($data as $record) {
                 }
             }
 
-            if ($realZoneName !== $zoneName) {
-                foreach ($ipAddresses as $ipAddress => $type) {
-                    $changes["CREATE {$realZoneName} {$type}"] = [
-                        'Action' => 'CREATE',
-                        'ResourceRecordSet' => [
-                            'Name' => $realZoneName,
-                            'Type' => $type,
-                            'TTL' => $recordsTTL,
-                            'ResourceRecords' => [
-                                [
-                                    'Value' => $ipAddress
-                                ]
-                            ],
-                        ]
-                    ];
-                }
-            }
-
             /**
              * Add Resource records to zone
              */
             foreach($record->zone->rr as $rr) {
-                if (!in_array($rr->type, $client->getConfig()['supportedTypes']) || $realZoneName !== $zoneName) {
+                if (!in_array($rr->type, $client->getConfig()['supportedTypes'])) {
                     continue;
                 }
 
@@ -318,24 +297,7 @@ function getRecordSetFromRecordSets($recordSets, $name, $type)
     return [];
 }
 
-function getIpAddresses()
-{
-    $addresses = [];
-    $ipRequest = '<ip><get></get></ip>';
 
-    $api = pm_ApiRpc::getService();
-    $ipResponse = $api->call($ipRequest);
-    $addressInfos = $ipResponse->xpath('/packet/ip/get/result/addresses/ip_info');
-
-    foreach ($addressInfos as $addressInfo) {
-        $address = (string)$addressInfo->public_ip_address;
-        if ($address) {
-            $addresses[$address] = strpos($address, '.') ? 'A' : 'AAAA';
-        }
-    }
-
-    return $addresses;
-}
 
 if ($log->hasErrors()) {
     exit(255);

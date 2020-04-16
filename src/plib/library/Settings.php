@@ -8,7 +8,7 @@
  */
 class Modules_Route53_Settings
 {
-    const MANAGE_DOMAIN_MODE_A_RECORD_WITH_SERVER_ADDRESS = 'ARecordWithServerAddress';
+    const MANAGED_DOMAIN_WITHOUT_NS = 'ManagedDomainWithoutNs';
 
     /**
      * Returns managedDomains from Plesk Settings
@@ -42,7 +42,7 @@ class Modules_Route53_Settings
      * @param string $managedDomain
      * @param string $mode
      */
-    public static function addManagedDomain($managedDomain, $mode = self::MANAGE_DOMAIN_MODE_A_RECORD_WITH_SERVER_ADDRESS)
+    public static function addManagedDomain($managedDomain, $mode = self::MANAGED_DOMAIN_WITHOUT_NS)
     {
         $managedDomains = self::getManagedDomains();
         $managedDomain = strtolower($managedDomain);

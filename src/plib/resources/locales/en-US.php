@@ -67,5 +67,5 @@ $messages = array(
     'managedDomainModeLabel' => 'Mode',
     'managedDomainCreated' => 'Managed Domain created',
     'modeColumn' => 'Mode',
-    'managedDomainsModeARecordWithServerAddress' => 'A-Record with Server Address',
+    'managedDomainsModeManagedDomainWithoutNs' => 'Write records to parent zone',
 );

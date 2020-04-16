@@ -24,8 +24,8 @@ class Modules_Route53_Form_ManagedDomains extends pm_Form_Simple
             'label' => pm_Locale::lmsg('managedDomainModeLabel'),
             'required' => true,
             'multiOptions' => [
-                Modules_Route53_Settings::MANAGE_DOMAIN_MODE_A_RECORD_WITH_SERVER_ADDRESS
-                => $this->lmsg('managedDomainsMode' . Modules_Route53_Settings::MANAGE_DOMAIN_MODE_A_RECORD_WITH_SERVER_ADDRESS),
+                Modules_Route53_Settings::MANAGED_DOMAIN_WITHOUT_NS
+                => $this->lmsg('managedDomainsMode' . Modules_Route53_Settings::MANAGED_DOMAIN_WITHOUT_NS),
             ],
             'validators' => [
                 ['NotEmpty', true],

@@ -266,7 +266,7 @@ class IndexController extends pm_Controller_Action
         $hostedZones = $client->getZones();
 
         foreach ($hostedZones as $zoneDomain => $zoneId) {
-            if (!in_array($zoneDomain, $domains)) {
+            if (!in_array($zoneDomain, $domains) || Modules_Route53_Settings::isManagedDomain($zoneDomain)) {
                 continue;
             }
 
@@ -278,10 +278,6 @@ class IndexController extends pm_Controller_Action
                         'Changes' => $zoneChanges,
                     ],
                 ]);
-            }
-
-            if (Modules_Route53_Settings::isManagedDomain($zoneDomain)) {
-                continue;
             }
 
             $client->deleteHostedZone([
