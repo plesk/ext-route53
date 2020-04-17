@@ -52,11 +52,50 @@ class IndexController extends pm_Controller_Action
                 'action' => 'delegation-set',
             ];
             $tabs[] = [
+                'title' => $this->lmsg('managedDomainsTitle'),
+                'action' => 'managed-domain'
+            ];
+            $tabs[] = [
                 'title' => $this->lmsg('toolsTitle'),
                 'action' => 'tools',
             ];
         }
         return $tabs;
+    }
+
+    public function managedDomainAction()
+    {
+        $this->view->list = new Modules_Route53_List_ManagedDomains($this->view, $this->getRequest());
+        $this->view->tabs = $this->_getTabs();
+    }
+
+    public function createManagedDomainAction()
+    {
+        $form = new Modules_Route53_Form_ManagedDomains();
+
+        if ($this->getRequest()->isPost() && $form->isValid($this->getRequest()->getPost())) {
+            try {
+                $form->process();
+                $this->_status->addMessage('info', $this->lmsg('managedDomainCreated'));
+            } catch (Exception $e) {
+                $this->_status->addMessage('error', $e->getMessage());
+            }
+            $this->_helper->json(array('redirect' => $this->_helper->url('managed-domain')));
+        }
+
+        $this->view->pageTitle = $this->lmsg('createManagedDomainButton');
+        $this->view->form = $form;
+    }
+
+    public function deleteManagedDomainAction()
+    {
+        if (!$this->getRequest()->isPost()) {
+            throw new pm_Exception('Permission denied');
+        }
+
+        Modules_Route53_Settings::removeManagedDomainById($this->_getParam('id'));
+
+        $this->_redirect('index/managed-domain');
     }
 
     public function delegationSetAction()
@@ -196,7 +235,7 @@ class IndexController extends pm_Controller_Action
             if (!isset($domain->id)) {
                 continue;
             }
-            $res[] = $domain->data->gen_info->name;
+            $res[] = $domain->data->gen_info->name . '.';
         }
 
         return $res;
@@ -214,25 +253,39 @@ class IndexController extends pm_Controller_Action
             $response = pm_Domain::getAllDomains();
             foreach ($response as $data) {
                 $domainName = $data->getName();
-                $domains[] = $domainName;
+                $domains[] = $domainName . '.';
             }
         } else {
             $domains = $this->getDomainListApi();
         }
 
         $domainAliases = $this->getDomainAliasListApi();
-        $domains = array_merge($domains, $domainAliases);
+        $domains = array_merge($domains, $domainAliases, Modules_Route53_Settings::getManagedDomainNames());
 
         $client = Modules_Route53_Client::factory();
         $hostedZones = $client->getZones();
 
         foreach ($hostedZones as $zoneDomain => $zoneId) {
-            $zoneDomain = trim($zoneDomain, '.');
             if (!in_array($zoneDomain, $domains)) {
                 continue;
             }
 
-            $zoneChanges = $client->getHostedZoneRecordsToDelete($zoneId);
+            $allowedChanges = [];
+
+            $api = pm_ApiRpc::getService();
+            $request = '<packet><dns><get_rec><filter/></get_rec></dns></packet>';
+            $response = $api->call($request);
+            $responseRecords = json_decode(json_encode($response->{'dns'}->get_rec), true);
+
+            foreach ($responseRecords['result'] as $responseRecord) {
+                $name = $responseRecord['data']['host'];
+                $type = $responseRecord['data']['type'];
+
+                $allowedChanges[] = "DELETE ${name} ${type}";
+            }
+
+            $zoneChanges = $client->getHostedZoneRecordsToDelete($zoneId, $allowedChanges);
+
             if ($zoneChanges) {
                 $client->changeResourceRecordSets([
                     'HostedZoneId' => $zoneId,
@@ -241,9 +294,12 @@ class IndexController extends pm_Controller_Action
                     ],
                 ]);
             }
-            $client->deleteHostedZone([
-                'Id' => $zoneId,
-            ]);
+
+            if (!Modules_Route53_Settings::isManagedDomain($zoneDomain)) {
+                $client->deleteHostedZone([
+                    'Id' => $zoneId,
+                ]);
+            }
         }
 
         $this->_status->addMessage('info', $this->lmsg('removeAllDone'));

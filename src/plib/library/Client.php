@@ -173,38 +173,52 @@ class Modules_Route53_Client
         return $model;
     }
 
-    public function getHostedZoneRecordsToDelete($zoneId)
+    public function getHostedZoneRecordSets($zoneId)
     {
         $recordSetIsTruncated = true;
         $nextRecordName = null;
         try {
-            $changes = [];
+            $recordSets = [];
             while ($recordSetIsTruncated) {
-                $modelRRs = $this->listResourceRecordSets([
+                $response = $this->listResourceRecordSets([
                     'HostedZoneId' => $zoneId,
                     'StartRecordName' => $nextRecordName,
                 ]);
 
-                $recordSetIsTruncated = $modelRRs['IsTruncated'];
-                $nextRecordName = $modelRRs['NextRecordName'];
-
-                foreach ($modelRRs['ResourceRecordSets'] as $modelRR) {
-
-                    if (!in_array($modelRR['Type'], $this->getConfig()['supportedTypes'])) {
-                        continue;
-                    }
-
-                    $changes[] = [
-                        'Action' => 'DELETE',
-                        'ResourceRecordSet' => $modelRR,
-                    ];
-                }
+                $recordSets = array_merge($response['ResourceRecordSets'], $recordSets);
+                $recordSetIsTruncated = $response['IsTruncated'];
+                $nextRecordName = $response['NextRecordName'];
             }
-            return $changes;
+            return $recordSets;
         } catch (Exception $e) {
             pm_Log::debug($e);
             return null;
         }
+    }
+
+    public function getHostedZoneRecordsToDelete($zoneId, $allowedChanges = [])
+    {
+        $changes = [];
+        $recordSets = $this->getHostedZoneRecordSets($zoneId);
+
+        foreach ($recordSets as $recordSet) {
+            $change = "DELETE ${recordSet['Name']} ${recordSet['Type']}";
+            pm_Log::err($change);
+            pm_Log::err(json_encode($allowedChanges));
+            if (
+                ($allowedChanges && !in_array($change, $allowedChanges))
+                || !in_array($recordSet['Type'], $this->getConfig()['supportedTypes'])
+            ) {
+                continue;
+            }
+
+            $changes[$change] = [
+                'Action' => 'DELETE',
+                'ResourceRecordSet' => $recordSet,
+            ];
+        }
+
+        return $changes;
     }
 
     public function getConfig()

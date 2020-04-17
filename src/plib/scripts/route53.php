@@ -77,21 +77,25 @@ $data = json_decode(file_get_contents('php://stdin'));
 $log = new Modules_Route53_Logger();
 
 foreach ($data as $record) {
+    $zoneName = $realZoneName = $record->zone->name;
+    $existingResources = [];
 
-    $zoneName = $record->zone->name;
+    if ($managedDomain = Modules_Route53_Settings::getManagedDomainOfSubdomain($zoneName)) {
+        $zoneName = $managedDomain;
+    }
+
     $recordsTTL = $record->zone->soa->ttl;
+
+    //AWS Route 53 does not use uppercase letters
+    $zoneId = $client->getZoneId(strtolower($zoneName));
     switch ($record->command) {
         /**
          * Zone created or updated
          */
         case 'create':
         case 'update':
-            //AWS Route 53 does not use uppercase letters
-            $zoneId = $client->getZoneId(strtolower($zoneName));
-
             $changes = [];
             if (!$zoneId) {
-
                 /**
                  * Zone not exists on AWS Route 53, create
                  */
@@ -120,19 +124,30 @@ foreach ($data as $record) {
                 $zoneId = $model['HostedZone']['Id'];
 
             } else {
+                try {
+                    $resourceRecordSets = $client->getHostedZoneRecordSets(substr($zoneId, 12));
 
-                /**
-                 * Zone exists, remove old Resource Records
-                 */
-                $changes = $client->getHostedZoneRecordsToDelete($zoneId);
+                    foreach ($resourceRecordSets as $resourceRecordSet) {
+                        $existingResources["CREATE {$resourceRecordSet['Name']} {$resourceRecordSet['Type']}"] = [
+                            'Action' => 'CREATE',
+                            'ResourceRecordSet' => [
+                                'Name' => $resourceRecordSet['Name'],
+                                'Type' => $resourceRecordSet['Type'],
+                                'TTL' => $resourceRecordSet['TTL'],
+                                'ResourceRecords' => $resourceRecordSet['ResourceRecords']
+                            ]
+                        ];
+                    }
+                } catch (Modules_Route53_Exception $e) {
+                    $log->err("Zone {$zoneName} not found: {$e->getMessage()}\n");
+                    continue 2;
+                }
             }
 
             /**
              * Add Resource records to zone
              */
-
             foreach($record->zone->rr as $rr) {
-
                 if (!in_array($rr->type, $client->getConfig()['supportedTypes'])) {
                     continue;
                 }
@@ -184,6 +199,27 @@ foreach ($data as $record) {
                 continue 2;
             }
 
+            $hostedZoneRecordsToDelete = $client->getHostedZoneRecordsToDelete($zoneId);
+
+            // Remove changes that already exist
+            foreach ($changes as $key => $change) {
+                if ($existingResourceRecordSet = $existingResources[$key]) {
+                    if ($existingResourceRecordSet !== $change) {
+                        $hostedZoneRecordToDelete = getRecordSetFromRecordSets(
+                            $hostedZoneRecordsToDelete,
+                            $change['ResourceRecordSet']['Name'],
+                            $change['ResourceRecordSet']['Type']
+                        );
+
+                        if ( $hostedZoneRecordToDelete['ResourceRecordSet'] !== $change['ResourceRecordSet']) {
+                            array_unshift($changes, $hostedZoneRecordToDelete);
+                        }
+                    } else {
+                        unset($changes[$key]);
+                    }
+                }
+            }
+
             /**
              * Apply zone modification
              */
@@ -192,7 +228,7 @@ foreach ($data as $record) {
                     $client->changeResourceRecordSets(array(
                         'HostedZoneId' => $zoneId,
                         'ChangeBatch'  => array(
-                            'Changes' => $changes,
+                            'Changes' => $changes
                         ),
                     ));
                 }
@@ -206,10 +242,7 @@ foreach ($data as $record) {
             break;
 
         case 'delete':
-            //AWS Route 53 does not use uppercase letters
-            $zoneId = $client->getZoneId(strtolower($zoneName));
-
-            if (!$zoneId) {
+            if (!$zoneId || $realZoneName !== $zoneName) {
                 continue 2;
             }
 
@@ -249,6 +282,22 @@ foreach ($data as $record) {
             break;
     }
 }
+
+function getRecordSetFromRecordSets($recordSets, $name, $type)
+{
+    foreach ($recordSets as $recordSet) {
+        if (
+            $recordSet['ResourceRecordSet']['Name'] === $name
+            && $recordSet['ResourceRecordSet']['Type'] === $type
+        ) {
+            return $recordSet;
+        }
+    }
+
+    return [];
+}
+
+
 
 if ($log->hasErrors()) {
     exit(255);
