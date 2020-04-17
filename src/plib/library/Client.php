@@ -196,18 +196,21 @@ class Modules_Route53_Client
         }
     }
 
-    public function getHostedZoneRecordsToDelete($zoneId)
+    public function getHostedZoneRecordsToDelete($zoneId, $allowedChanges)
     {
         $changes = [];
         $recordSets = $this->getHostedZoneRecordSets($zoneId);
 
         foreach ($recordSets as $recordSet) {
-
-            if (!in_array($recordSet['Type'], $this->getConfig()['supportedTypes'])) {
+            $change = "DELETE ${$recordSet['name']} ${$recordSet['type']}";
+            if (
+                !in_array($recordSet['Type'], $this->getConfig()['supportedTypes'])
+                && !in_array($change, $allowedChanges)
+            ) {
                 continue;
             }
 
-            $changes[] = [
+            $changes[$change] = [
                 'Action' => 'DELETE',
                 'ResourceRecordSet' => $recordSet,
             ];

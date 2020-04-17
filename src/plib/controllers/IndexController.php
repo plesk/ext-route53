@@ -266,11 +266,26 @@ class IndexController extends pm_Controller_Action
         $hostedZones = $client->getZones();
 
         foreach ($hostedZones as $zoneDomain => $zoneId) {
-            if (!in_array($zoneDomain, $domains) || Modules_Route53_Settings::isManagedDomain($zoneDomain)) {
+            if (!in_array($zoneDomain, $domains)) {
                 continue;
             }
 
-            $zoneChanges = $client->getHostedZoneRecordsToDelete($zoneId);
+            $allowedChanges = [];
+
+            $api = pm_ApiRpc::getService();
+            $request = '<packet><dns><get_rec><filter/></get_rec></dns></packet>';
+            $response = $api->call($request);
+            $responseRecords = json_decode(json_encode($response->{'dns'}->get_rec));
+
+            foreach ($responseRecords as $responseRecord) {
+                $name = $responseRecord['data']['host'];
+                $type = $responseRecord['data']['type'];
+
+                $allowedChanges[] = "DELETE ${name} ${type}";
+            }
+
+            $zoneChanges = $client->getHostedZoneRecordsToDelete($zoneId, $allowedChanges);
+
             if ($zoneChanges) {
                 $client->changeResourceRecordSets([
                     'HostedZoneId' => $zoneId,
@@ -280,9 +295,11 @@ class IndexController extends pm_Controller_Action
                 ]);
             }
 
-            $client->deleteHostedZone([
-                'Id' => $zoneId,
-            ]);
+            if (!Modules_Route53_Settings::isManagedDomain($zoneDomain)) {
+                $client->deleteHostedZone([
+                    'Id' => $zoneId,
+                ]);
+            }
         }
 
         $this->_status->addMessage('info', $this->lmsg('removeAllDone'));
