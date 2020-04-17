@@ -26,6 +26,19 @@ class Modules_Route53_Settings
         return $managedDomains;
     }
 
+    public static function getManagedDomainNames()
+    {
+        $names = [];
+
+        $managedDomains = self::getManagedDomains();
+
+        foreach ($managedDomains as $managedDomain) {
+            $names[] = $managedDomain['name'];
+        }
+
+        return $names;
+    }
+
     /**
      * Sets managedDomains in Plesk settings
      *

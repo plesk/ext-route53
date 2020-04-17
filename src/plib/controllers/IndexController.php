@@ -260,7 +260,7 @@ class IndexController extends pm_Controller_Action
         }
 
         $domainAliases = $this->getDomainAliasListApi();
-        $domains = array_merge($domains, $domainAliases, Modules_Route53_Settings::getManagedDomains());
+        $domains = array_merge($domains, $domainAliases, Modules_Route53_Settings::getManagedDomainNames());
 
         $client = Modules_Route53_Client::factory();
         $hostedZones = $client->getZones();
@@ -275,9 +275,9 @@ class IndexController extends pm_Controller_Action
             $api = pm_ApiRpc::getService();
             $request = '<packet><dns><get_rec><filter/></get_rec></dns></packet>';
             $response = $api->call($request);
-            $responseRecords = json_decode(json_encode($response->{'dns'}->get_rec));
+            $responseRecords = json_decode(json_encode($response->{'dns'}->get_rec), true);
 
-            foreach ($responseRecords as $responseRecord) {
+            foreach ($responseRecords['result'] as $responseRecord) {
                 $name = $responseRecord['data']['host'];
                 $type = $responseRecord['data']['type'];
 
