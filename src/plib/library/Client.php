@@ -194,6 +194,11 @@ class Modules_Route53_Client
                         continue;
                     }
 
+                    if($modelRR['Type'] == 'NS' || $modelRR['Type'] == 'SOA') {
+                        // Route 53 does not support deletion of SOA or NS records
+                        continue;
+                    }
+
                     $changes[] = [
                         'Action' => 'DELETE',
                         'ResourceRecordSet' => $modelRR,
@@ -209,7 +214,7 @@ class Modules_Route53_Client
 
     public function getConfig()
     {  // Integration config
-        return [
+        $configuration = [
             'ttl' => 300,  // Resource Records TTL
             'supportedTypes' => [  // Exportable Resource Record types
                 'A',
@@ -225,6 +230,10 @@ class Modules_Route53_Client
             'changeResourceRecordSets' => true,  // Permission to modify zone on AWS Route 53 free
             'deleteHostedZone' => true,  // Permission to delete zone on AWS Route 53 free
         ];
+        if(pm_Settings::get('manageNsRecords')) {
+            array_push($configuration['supportedTypes'], 'NS');
+        }
+        return $configuration;
     }
 
     public static function factory($config = [])
