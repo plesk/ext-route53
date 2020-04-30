@@ -203,8 +203,7 @@ class Modules_Route53_Client
 
         foreach ($recordSets as $recordSet) {
             $change = "DELETE ${recordSet['Name']} ${recordSet['Type']}";
-            pm_Log::err($change);
-            pm_Log::err(json_encode($allowedChanges));
+
             if (
                 ($allowedChanges && !in_array($change, $allowedChanges))
                 || !in_array($recordSet['Type'], $this->getConfig()['supportedTypes'])
