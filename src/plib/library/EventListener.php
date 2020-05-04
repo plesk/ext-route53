@@ -89,7 +89,7 @@ APICALL;
                 'secret' => pm_Settings::get('secret'),
             ],
             'version' => '2010-12-01',
-            'region' => 'eu-central-1',
+            'region' => pm_Settings::get('region'),
         ]);
     }
 }

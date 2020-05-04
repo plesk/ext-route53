@@ -249,7 +249,7 @@ class Modules_Route53_Client
                 'secret' => pm_Settings::get('secret'),
             ],
             'version' => '2013-04-01',
-            'region' => 'us-east-1',
+            'region' => pm_Settings::get('region'),
         ], $config);
 
         if (pm_ProductInfo::isWindows()) {

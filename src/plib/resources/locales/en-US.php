@@ -68,4 +68,5 @@ $messages = array(
     'managedDomainCreated' => 'Managed Domain created',
     'modeColumn' => 'Mode',
     'managedDomainsModeManagedDomainWithoutNs' => 'Write records to parent zone',
+    'regionLabel' => 'AWS Region'
 );

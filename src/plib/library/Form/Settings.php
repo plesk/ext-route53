@@ -70,6 +70,15 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
                 array('NotEmpty', true),
             ),
         ));
+        $this->addElement('text', 'region', array(
+            'label' => pm_Locale::lmsg('regionLabel'),
+            'value' => pm_Settings::get('region') ?? 'us-east-1',
+            'class' => 'f-large-size',
+            'required' => true,
+            'validators' => array(
+                array('NotEmpty', true),
+            ),
+        ));
         $this->addElement('checkbox', 'enabled', array(
             'label' => pm_Locale::lmsg('enabledLabel'),
             'value' => pm_Settings::get('enabled'),
@@ -89,6 +98,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         if (!$data['enabled']) {
             $this->getElement('key')->setRequired(false);
             $this->getElement('secret')->setRequired(false);
+            $this->getElement('region')->setRequired(false);
             return parent::isValid($data);
         }
 
@@ -98,7 +108,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
 
         try {
             if ($data['keyType'] == self::KEY_TYPE_ROOT_CREDENTAL) {
-                $res = $this->isAdministratorAccess($data['key'], $data['secret']);
+                $res = $this->isAdministratorAccess($data['key'], $data['secret'], $data['region']);
                 if (!$res) {
                     throw new Exception(pm_Locale::lmsg('notAdministratorAccess'));
                 }
@@ -107,6 +117,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
                     'credentials' => [
                         'key' => $data['key'],
                         'secret' => $data['secret'],
+                        'region' => $data['region']
                     ]
                 ])->checkCredentials();
             }
@@ -115,6 +126,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
             $this->markAsError();
             $this->getElement('key')->addError($e->getMessage());
             $this->getElement('secret')->addError($e->getMessage());
+            $this->getElement('region')->addError($e->getMessage());
             return false;
         }
 
@@ -130,29 +142,32 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         $keyType = $this->getValue('keyType');
         $key = $this->getValue('key');
         $secret = $this->getValue('secret');
+        $region = $this->getValue('region');
 
         if ($keyType == self::KEY_TYPE_USER_CREDENTAL) {
-            $this->saveUserData($key, $secret);
+            $this->saveUserData($key, $secret, $region);
         } else {
             $res = $this->createUser($key, $secret);
-            $this->saveUserData($res['key'], $res['secret']);
+            $this->saveUserData($res['key'], $res['secret'], $region);
         }
         return $res;
     }
 
-    private function saveUserData($key, $secret)
+    private function saveUserData($key, $secret, $region)
     {
         pm_Settings::set('key', $key);
         pm_Settings::set('secret', $secret);
         pm_Settings::set('keyType', self::KEY_TYPE_USER_CREDENTAL);
+        pm_Settings::set('region', $region);
     }
 
-    private function isAdministratorAccess($key, $secret)
+    private function isAdministratorAccess($key, $secret, $region)
     {
         $iamComponent = new AmazonIAM();
         $iamComponent
             ->setKey($key)
             ->setSecret($secret)
+            ->setRegion($region)
         ;
         $res = $iamComponent->isAdministratorAccess();
         return $res;
