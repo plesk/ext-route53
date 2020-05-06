@@ -71,6 +71,7 @@ APICALL;
 </dns>
 </packet>
 APICALL;
+                pm_ApiRpc::getService('1.6.8.0')->call($request);
             }
         }
     }
