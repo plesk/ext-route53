@@ -36,60 +36,45 @@ class Modules_Route53_EventListener implements EventListener
      */
     private function addAmazonSesVerificationEntry(string $domain, int $siteId)
     {
-        $request = <<<APICALL
+        $result = $this->getSesV2Client()->createEmailIdentity(['EmailIdentity' => $domain]);
+
+         if ($result->hasKey('DkimAttributes') && array_key_exists('Tokens', $result->get('DkimAttributes'))) {
+            $request = <<<APICALL
 <packet>
 <dns>
- <get_rec>
-  <filter>
-    <site-id>${siteId}</site-id>
-  </filter>
- </get_rec>
-</dns>
-</packet>
 APICALL;
-        $response = pm_ApiRpc::getService('1.6.8.0')->call($request);
-        $oldVerificationToken = '';
-        foreach($response->dns->get_rec as $record) {
-            if (strpos('_amazonses', $record->data->host) !== false) {
-                $oldVerificationToken = $record->data->value;
-                break;
-            }
-        }
-        $result = $this->getSesClient()->verifyDomainIdentity(['Domain' => $domain]);
-        if ($result->hasKey('VerificationToken')) {
-            $verificationToken = $result->get('VerificationToken');
-            if ($verificationToken !== $oldVerificationToken) {
-                $request = <<<APICALL
-<packet>
-<dns>
+             foreach ($result->get('DkimAttributes')['Tokens'] as $token) {
+                 $request .= <<<APICALL
    <add_rec>
       <site-id>${siteId}</site-id>
-      <type>TXT</type>
-      <host>_amazonses</host>
-      <value>${verificationToken}</value>
+      <type>CNAME</type>
+      <host>${token}._domainkey</host>
+      <value>${token}.dkim.amazonses.com</value>
    </add_rec>
+APICALL;
+             }
+                $request .= <<<APICALL
 </dns>
 </packet>
 APICALL;
                 pm_ApiRpc::getService('1.6.8.0')->call($request);
-            }
         }
     }
 
     private function removeAmazonSesVerificationEntry(string $domain)
     {
-        $this->getSesClient()->deleteIdentity(['Identity' => $domain]);
+        $this->getSesV2Client()->deleteEmailIdentity(['EmailIdentity' => $domain]);
     }
 
-    private function getSesClient()
+    private function getSesV2Client()
     {
-        return new \Aws\Ses\SesClient([
+        return new \Aws\SesV2\SesV2Client([
             'exception_class' => 'Modules_Route53_Exception',
             'credentials' => [
                 'key' => pm_Settings::get('key'),
                 'secret' => pm_Settings::get('secret'),
             ],
-            'version' => '2010-12-01',
+            'version' => '2019-09-27',
             'region' => pm_Settings::get('region'),
         ]);
     }
