@@ -9,6 +9,11 @@ if (empty($keyType) && !empty($key)) {
     pm_Settings::set('keyType', Modules_Route53_Form_Settings::KEY_TYPE_USER_CREDENTAL);
 }
 
+if (empty(pm_Settings::get('region'))) {
+    // set us-east-1 as default to prevent post-install failure
+    pm_Settings::set('region', 'us-east-1');
+}
+
 try {
     if (substr(PHP_OS, 0, 3) == 'WIN') {
         $cmd = '"' . PRODUCT_ROOT . '\bin\extension.exe"';

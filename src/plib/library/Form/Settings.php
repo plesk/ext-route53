@@ -72,7 +72,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         ));
         $this->addElement('text', 'region', array(
             'label' => pm_Locale::lmsg('regionLabel'),
-            'value' => pm_Settings::get('region') ?? 'us-east-1',
+            'value' => pm_Settings::get('region'),
             'class' => 'f-large-size',
             'required' => true,
             'validators' => array(
