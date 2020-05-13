@@ -226,7 +226,7 @@ class Modules_Route53_Client
 
     public function getConfig()
     {  // Integration config
-        $c = [
+        $configuration = [
             'ttl' => 300,  // Resource Records TTL
             'supportedTypes' => [  // Exportable Resource Record types
                 'A',
@@ -236,15 +236,16 @@ class Modules_Route53_Client
                 'SRV',
                 'SPF',
                 'AAAA',
+                'CAA',
             ],
             'createHostedZone' => true,  // Permission to create zone on AWS Route 53 billed
             'changeResourceRecordSets' => true,  // Permission to modify zone on AWS Route 53 free
             'deleteHostedZone' => true,  // Permission to delete zone on AWS Route 53 free
         ];
         if(pm_Settings::get('manageNsRecords')) {
-            array_push($c['supportedTypes'],"NS");
+            array_push($configuration['supportedTypes'], 'NS');
         }
-        return $c;
+        return $configuration;
     }
 
     public static function factory($config = [])

@@ -1,3 +1,8 @@
+# 2.7.3
+
+* [-] CAA records in Plesk can now be synced with Amazon Route 53. (EXTPLESK-1611)
+* [-] Installation of the extension in Plesk Obsidian no longer produces PHP error messages written to `/var/log/plesk/panel.log` in Plesk for Linux and `%plesk_dir%\admin\logs\php_error.log` in Plesk for Windows. (EXTPLESK-1143)
+
 # 2.7.2
 
 * [*] The extension now applies the TTL value of the DNS zone (instead of a default value) to all its DNS records.
