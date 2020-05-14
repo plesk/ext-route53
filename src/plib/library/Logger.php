@@ -1,5 +1,6 @@
 <?php
 // Copyright 1999-2018. Plesk International GmbH.
+// Logs are written to /var/log/plesk/panel.log
 
 class Modules_Route53_Logger
 {
@@ -23,7 +24,7 @@ class Modules_Route53_Logger
 
     private function log($type, $message)
     {
-        echo "$message\n";
+        echo $type . ": " . $message . "\n";
         $this->log[$type][] = [
             'timestamp' => time(),
             'message' => $message,

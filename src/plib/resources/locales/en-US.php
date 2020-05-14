@@ -8,6 +8,8 @@ $messages = array(
     'keyLabel' => 'Key',
     'secretLabel' => 'Secret',
     'enabledLabel' => 'Turn on Amazon Web Service Route 53',
+    'infoColumn' => 'Info',
+    'delegationSetLimit' => 'Limit',
     'manageNsRecordsLabel' => 'Manage NS and SOA records',
     'manageNsRecordsDescription' => '<b>Note:</b> Enabling this option without completing the necessary preliminary steps may make your websites unavailable. Applying the changes may take up to 72 hours.<br>This option allows for transferring of NS records from Plesk to the Route 53 name servers. It is a necessary preliminary step for setting up white-label name servers using Route 53 name servers. <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/white-label-name-servers.html" target="_blank">Read the Route 53 guide to learn more</a>.',
     'authDataSaved' => 'The authorization data was saved.',
