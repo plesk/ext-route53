@@ -9,7 +9,7 @@
 
 # 2.7.1
 
-* [*] The extension can now sync DNS zones with a large number of DNS records (more than 100).
+* [*] The extension can now sync DNS zones with a large number of DNS records (more than 100). (EXTPLESK-393)
 
 # 2.7.0
 
