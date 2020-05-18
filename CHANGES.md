@@ -1,3 +1,13 @@
+# 2.8.0
+
+* [+] It is now possible to have white-label or vanity name server with Amazon Route 53. To configure them, users need to select the "Manage NS and SOA records" checkbox and then follow step 7 and further in the [Amazon Route 53 guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/white-label-name-servers.html).
+
+  The feature described above was [introduced by the extension’s user](https://github.com/plesk/ext-route53/pull/40). 
+  We express our gratitude and welcome the contribution of Amazon Route 53 users into further development of the extension.
+
+* [*] Added the warning message shown after users click the "Sync All Zones" button. The warning explains that Plesk will overwrite all DNS records in Route53 with those in Plesk and will remove those DNS records from Route53 that do not exist in Plesk.
+* [-] The extension can now handle 2048-bit DKIM keys. (EXTPLESK-286)
+
 # 2.7.3
 
 * [-] CAA records in Plesk can now be synced with Amazon Route 53. (EXTPLESK-1611)
