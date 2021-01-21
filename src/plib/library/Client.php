@@ -69,6 +69,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
  */
 class Modules_Route53_Client
 {
+
+    const CALLER_REFERENCE_PREFIX = 'plesk_';
+
     /** @var \Aws\Route53\Route53Client */
     private $_client;
     private $_zones = null;
@@ -123,10 +126,15 @@ class Modules_Route53_Client
     {
         $zones = [];
         $opts = [/* 'MaxItems' => 2 */];
+        $prefixLength = strlen(self::CALLER_REFERENCE_PREFIX);
         do {
             $model = $this->listHostedZones($opts);
             foreach ($model['HostedZones'] as $zone) {
-                $zones[$zone['Name']] = $zone['Id'];
+                if ((!isset($zones[$zone['Name']]) && !$zone['Config']['PrivateZone'])
+                    || strcmp(substr($zone['CallerReference'], 0, $prefixLength), self::CALLER_REFERENCE_PREFIX) === 0
+                ) {
+                    $zones[$zone['Name']] = $zone['Id'];
+                }
             }
             $opts['Marker'] = $model['NextMarker'];
         } while ($model['IsTruncated']);
@@ -161,6 +169,9 @@ class Modules_Route53_Client
 
     public function createHostedZone(array $args = [])
     {
+        if (!isset($args['CallerReference'])) {
+            $args['CallerReference'] = self::CALLER_REFERENCE_PREFIX . uniqid();
+        }
         if ($delegationSetId = pm_Settings::get('delegationSet')) {
             // Workaround for Route53Client::cleanId
             $args['DelegationSetId'] = str_replace('/delegationset/', '', $delegationSetId);
