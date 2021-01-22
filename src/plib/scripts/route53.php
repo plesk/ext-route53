@@ -103,8 +103,7 @@ foreach ($data as $record) {
 
                 try {
                     $model = $client->createHostedZone(array(
-                        'Name'            => $zoneName,
-                        'CallerReference' => uniqid(),
+                        'Name' => $zoneName,
                     ));
                 } catch (Modules_Route53_Exception $e) {
                     if ('ConflictingDomainExists' == $e->awsCode) {

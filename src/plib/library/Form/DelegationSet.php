@@ -27,7 +27,7 @@ class Modules_Route53_Form_DelegationSet extends pm_Form_Simple
     public function process()
     {
         $delegationSet = [
-            'CallerReference' => uniqid(),
+            'CallerReference' => Modules_Route53_Client::CALLER_REFERENCE_PREFIX . uniqid(),
         ];
         if ('none' != $this->getValue('hostedZone')) {
             $delegationSet['HostedZoneId'] = $this->getValue('hostedZone');
