@@ -200,16 +200,20 @@ class Modules_Route53_Client
     {
         $recordSetIsTruncated = true;
         $nextRecordName = null;
+        $nextRecordType = null;
+
         try {
             $changes = [];
             while ($recordSetIsTruncated) {
                 $modelRRs = $this->listResourceRecordSets([
                     'HostedZoneId' => $zoneId,
                     'StartRecordName' => $nextRecordName,
+                    'StartRecordType' => $nextRecordType,
                 ]);
 
                 $recordSetIsTruncated = $modelRRs['IsTruncated'];
-                $nextRecordName = $modelRRs['NextRecordName'];
+                $nextRecordName = isset($modelRRs['NextRecordName']) ? $modelRRs['NextRecordName'] : null;
+                $nextRecordType = isset($modelRRs['NextRecordType']) ? $modelRRs['NextRecordType'] : null;
 
                 foreach ($modelRRs['ResourceRecordSets'] as $modelRR) {
 
