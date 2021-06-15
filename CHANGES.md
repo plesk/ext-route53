@@ -1,3 +1,8 @@
+# 2.8.1
+
+* [-] The extension now correctly syncs domains` DNS records if the total number of records exceeds 100. (EXTPLESK-2698)
+* [-] The extension now syncs a public zone instead of a private one for a domain with two hosted zones in AWS. (EXTPLESK-2359)
+
 # 2.8.0
 
 * [+] It is now possible to have white-label or vanity name server with Amazon Route 53. To configure them, users need to select the "Manage NS and SOA records" checkbox and then follow step 7 and further in the [Amazon Route 53 guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/white-label-name-servers.html).
