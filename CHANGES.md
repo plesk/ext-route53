@@ -1,3 +1,7 @@
+# 2.8.2
+
+* [-] The extension now does not produce PHP error messages regarding AWS. (EXTPLESK-4242)
+
 # 2.8.1
 
 * [-] The extension now correctly syncs domains` DNS records if the total number of records exceeds 100. (EXTPLESK-2698)
