@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 1999-2021. Plesk International GmbH. -->
+<!-- Copyright 1999-2023. Plesk International GmbH. -->
 <module>
   <id>route53</id>
   <name>Amazon Route 53</name>
@@ -7,7 +7,7 @@
   <category>dns</category>
   <category>clouds</category>
   <version>2.8.2</version>
-  <release>1</release>
+  <release>2</release>
   <vendor>Plesk</vendor>
   <url>https://github.com/plesk/ext-route53</url>
   <plesk_min_version>12.0.18</plesk_min_version>
