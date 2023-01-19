@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH. All rights reserved.
+// Copyright 1999-2023. Plesk International GmbH. All rights reserved.
 
 declare(strict_types=1);
 
