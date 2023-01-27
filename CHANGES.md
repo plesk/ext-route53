@@ -1,3 +1,7 @@
+# 2.8.3
+
+* [*] (Plesk) Amazon Route 53 will be the last Amazon Route 53 update that supports Plesk versions older than Plesk 18.0.39. To continue receiving Amazon Route 53 updates with bugfixes and new features, please update your Plesk installation to version 18.0.40 or higher.
+
 # 2.8.2
 
 * [-] The extension now does not produce PHP error messages regarding AWS. (EXTPLESK-4242)
