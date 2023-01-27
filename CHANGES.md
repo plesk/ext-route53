@@ -1,3 +1,7 @@
+# 2.9.0
+
+* [*] Internal improvements.
+
 # 2.8.2
 
 * [-] The extension now does not produce PHP error messages regarding AWS. (EXTPLESK-4242)
