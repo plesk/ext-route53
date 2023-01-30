@@ -13,8 +13,7 @@
   },
   "require": {
     "php": "^7.4 || ^8.0",
-    "aws/aws-sdk-php": "3.*",
-    "plesk/amazon-iam": "dev-master"
+    "aws/aws-sdk-php": "3.62.*"
   },
   "repositories": [
     {
