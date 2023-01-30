@@ -164,7 +164,11 @@ class IndexController extends pm_Controller_Action
         $alias = json_decode(json_encode($siteAliasResponse->{'site-alias'}->get));
         $aliasArray =  is_array($alias->result) ? $alias->result : array($alias->result);
         foreach ($aliasArray as $aliasDomain) {
-            $res[] = $aliasDomain->info->name;
+            if (property_exists($aliasDomain, 'info')) {
+                if (property_exists($aliasDomain->info, 'name')) {
+                    $res[] = $aliasDomain->info->name;
+                }
+            }
         }
 
         return $res;
