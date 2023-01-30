@@ -12,9 +12,9 @@
     "vendor-dir": "src/plib/vendor"
   },
   "require": {
-    "php": "^5.6 || ^7.0",
+    "php": "^7.4 || ^8.0",
     "aws/aws-sdk-php": "3.*",
-    "plesk/amazon-iam": "0.1.*"
+    "plesk/amazon-iam": "dev-master"
   },
   "repositories": [
     {
@@ -23,3 +23,4 @@
     }
   ]
 }
+
