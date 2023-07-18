@@ -1,7 +1,7 @@
 <?php
 // Copyright 1999-2018. Plesk International GmbH.
 
-require_once (__DIR__ . '/../../vendor/autoload.php');
+require_once(__DIR__ . '/../../vendor/autoload.php');
 
 class Modules_Route53_Form_Settings extends pm_Form_Simple
 {
@@ -25,32 +25,9 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
     public function init()
     {
         parent::init();
-
-        $this->addElement('description', 'description', [
-            'description' =>
-                '<ul>' .
-
-            '<li>' . pm_Locale::lmsg('getAuth') . ' : ' .
-            '<a href="https://aws.amazon.com/" target="_blank">https://aws.amazon.com</a> ' .
-            '-&gt; MyAccount -&gt; Security Credentials </li>' .
-            '<li>' . pm_Locale::lmsg('getAuthStepTwo', [
-                'learnMoreUrl' => 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/access-control-managing-permissions.html'
-             ]) . '</li>',
-            'escape' => false,
-        ]);
-
-        $this->addElement('radio', 'keyType', [
-            'label' => pm_Locale::lmsg('awsKeyType'),
-            'multiOptions' => [
-                self::KEY_TYPE_ROOT_CREDENTAL => pm_Locale::lmsg('formRootCredential'),
-                self::KEY_TYPE_USER_CREDENTAL => pm_Locale::lmsg('formPreCreatedLimitedUserCredential')
-            ],
-            'value' => pm_Settings::get('keyType', self::KEY_TYPE_ROOT_CREDENTAL),
-            'required' => true,
-            'validators' => [
-                ['NotEmpty', true],
-            ],
-        ]);
+        \pm_Config::get('rootAccountEnabled', false)
+            ? $this->getRootCreationElements()
+            : $this->getKeyDescriptionElements();
 
         $this->addElement('text', 'key', array(
             'label' => pm_Locale::lmsg('keyLabel'),
@@ -80,7 +57,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
             'tag' => '',
         ]);
         $this->addDisplayGroup(['manageNsRecords', 'nsDescription'], 'nsWithDescription', [
-                'decorators' =>  [
+                'decorators' => [
                     ['ViewScript', ['viewScript' => 'index/settings-form.phtml']]
                 ]
             ]
@@ -96,7 +73,6 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
                 'cancelLink' => pm_Context::getModulesListUrl(),
             ));
         }
-
     }
 
     public function isValid($data)
@@ -112,7 +88,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         }
 
         try {
-            if ($data['keyType'] == self::KEY_TYPE_ROOT_CREDENTAL) {
+            if (\pm_Config::get('rootAccountEnabled', false) && $data['keyType'] == self::KEY_TYPE_ROOT_CREDENTAL) {
                 $res = $this->isAdministratorAccess($data['key'], $data['secret']);
                 if (!$res) {
                     throw new Exception(pm_Locale::lmsg('notAdministratorAccess'));
@@ -143,7 +119,10 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         pm_Settings::set('enabled', $this->getValue('enabled'));
         pm_Settings::set('manageNsRecords', $this->getValue('manageNsRecords'));
 
-        $keyType = $this->getValue('keyType');
+        \pm_Config::get('rootAccountEnabled', false)
+            ? $keyType = $this->getValue('keyType')
+            : $keyType = self::KEY_TYPE_USER_CREDENTAL;
+
         $key = $this->getValue('key');
         $secret = $this->getValue('secret');
 
@@ -168,8 +147,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         $iamComponent = new AmazonIAM();
         $iamComponent
             ->setKey($key)
-            ->setSecret($secret)
-        ;
+            ->setSecret($secret);
         $res = $iamComponent->isAdministratorAccess();
         return $res;
     }
@@ -194,10 +172,10 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
 
             $iamComponent->getIAMClient()
                 ->putUserPolicy([
-                'PolicyDocument' => $policyDocument->__toString(),
-                'PolicyName' => self::USERNAME_PREFIX .'full-access',
-                'UserName' => $userName
-            ]);
+                    'PolicyDocument' => $policyDocument->__toString(),
+                    'PolicyName' => self::USERNAME_PREFIX . 'full-access',
+                    'UserName' => $userName
+                ]);
 
             $response = $iamComponent->createAccessKey($userName);
             $responseAccessKey = $response->get('AccessKey');
@@ -211,5 +189,45 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         }
 
         return $res;
+    }
+
+    private function getRootCreationElements()
+    {
+        $this->addElement('description', 'description', [
+            'description' =>
+                '<ul>' .
+
+                '<li>' . pm_Locale::lmsg('getAuth') . ' : ' .
+                '<a href="https://aws.amazon.com/" target="_blank">https://aws.amazon.com</a> ' .
+                '-&gt; MyAccount -&gt; Security Credentials </li>' .
+                '<li>' . pm_Locale::lmsg('getAuthStepTwo', [
+                    'learnMoreUrl' => 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/access-control-managing-permissions.html'
+                ]) . '</li>',
+            'escape' => false,
+        ]);
+
+        $this->addElement('radio', 'keyType', [
+            'label' => pm_Locale::lmsg('awsKeyType'),
+            'multiOptions' => [
+                self::KEY_TYPE_ROOT_CREDENTAL => pm_Locale::lmsg('formRootCredential'),
+                self::KEY_TYPE_USER_CREDENTAL => pm_Locale::lmsg('formPreCreatedLimitedUserCredential')
+            ],
+            'value' => pm_Settings::get('keyType', self::KEY_TYPE_ROOT_CREDENTAL),
+            'required' => true,
+            'validators' => [
+                ['NotEmpty', true],
+            ],
+        ]);
+    }
+
+    private function getKeyDescriptionElements()
+    {
+        $this->addElement('description', 'description', [
+            'description' =>
+                '<br>' . pm_Locale::lmsg('getAuthNoRoot', [
+                    'learnMoreUrl' => 'https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/access-control-managing-permissions.html'
+                ]),
+            'escape' => false
+        ]);
     }
 }

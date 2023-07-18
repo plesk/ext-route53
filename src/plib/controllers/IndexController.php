@@ -32,7 +32,9 @@ class IndexController extends pm_Controller_Action
             }
             $this->_helper->json(array('redirect' => pm_Context::getBaseUrl()));
         } else {
-            pm_View_Status::addInfo($this->lmsg('statusRootAccountCredentials'));
+            if (\pm_Config::get('rootAccountEnabled', false)) {
+                pm_View_Status::addInfo($this->lmsg('statusRootAccountCredentials'));
+            }
         }
 
         $this->view->form = $form;
@@ -162,7 +164,7 @@ class IndexController extends pm_Controller_Action
         $siteAliasRequest = '<site-alias><get><filter/></get></site-alias>';
         $siteAliasResponse = $api->call($siteAliasRequest);
         $alias = json_decode(json_encode($siteAliasResponse->{'site-alias'}->get));
-        $aliasArray =  is_array($alias->result) ? $alias->result : array($alias->result);
+        $aliasArray = is_array($alias->result) ? $alias->result : array($alias->result);
         foreach ($aliasArray as $aliasDomain) {
             if (property_exists($aliasDomain, 'info')) {
                 if (property_exists($aliasDomain->info, 'name')) {
@@ -191,8 +193,8 @@ class IndexController extends pm_Controller_Action
         $sites = json_decode(json_encode($sitesResponse->site->get));
         $websp = json_decode(json_encode($webspResponse->webspace->get));
 
-        $sitesArray =  is_array($sites->result) ? $sites->result : array($sites->result);
-        $webspArray =  is_array($websp->result) ? $websp->result : array($websp->result);
+        $sitesArray = is_array($sites->result) ? $sites->result : array($sites->result);
+        $webspArray = is_array($websp->result) ? $websp->result : array($websp->result);
 
         $tmpList = array_merge($sitesArray, $webspArray);
 
@@ -240,7 +242,7 @@ class IndexController extends pm_Controller_Action
             if ($zoneChanges) {
                 $client->changeResourceRecordSets([
                     'HostedZoneId' => $zoneId,
-                    'ChangeBatch'  => [
+                    'ChangeBatch' => [
                         'Changes' => $zoneChanges,
                     ],
                 ]);

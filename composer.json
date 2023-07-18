@@ -15,6 +15,9 @@
     "php": "^7.4 || ^8.0",
     "aws/aws-sdk-php": "3.62.*"
   },
+  "require-dev": {
+    "plesk/pm-api-stubs": "^18.0"
+  },
   "repositories": [
     {
       "type": "git",
