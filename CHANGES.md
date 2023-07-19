@@ -1,3 +1,7 @@
+# 2.9.1
+
+* [+] Integration with AWS root account is not available anymore because of security and recommendation to avoid using this way.
+
 # 2.9.0
 
 * [*] Internal improvements.
