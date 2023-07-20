@@ -1,6 +1,6 @@
 # 2.9.1
 
-* [+] Integration with AWS root account is not available anymore because of security and recommendation to avoid using this way.
+* [*] [For the sake of security](https://docs.aws.amazon.com/signin/latest/userguide/introduction-to-root-user-sign-in-tutorial.html), we removed the ability to sign in to Amazon Route 53 using the account's root user credentials.
 
 # 2.9.0
 
