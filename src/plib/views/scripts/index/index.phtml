@@ -3,5 +3,7 @@
 ?>
 <?php if ($this->tabs) echo $this->renderTabs($this->tabs) ?>
 <legend><?php echo pm_Locale::lmsg('awsApiAuthorization'); ?></legend>
-<span><?php echo pm_Locale::lmsg('awsDescriptionWindow'); ?></span>
+<span><?php echo pm_Locale::lmsg('awsDescriptionWindow'); ?><?php if (pm_Config::get('rootAccountEnabled', false)) {
+        echo pm_Locale::lmsg('awsDescriptionWindowRoot');
+    } ?></span>
 <?php echo $this->form; ?>
