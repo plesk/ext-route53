@@ -13,7 +13,7 @@
   },
   "require": {
     "php": "^7.4 || ^8.0",
-    "aws/aws-sdk-php": "3.62.*"
+    "aws/aws-sdk-php": "3.271"
   },
   "require-dev": {
     "plesk/pm-api-stubs": "^18.0"
@@ -25,4 +25,3 @@
     }
   ]
 }
-
