@@ -1,3 +1,7 @@
+# 2.9.2
+
+* [*] Internal improvements.
+
 # 2.9.1
 
 * [*] [For the sake of security](https://docs.aws.amazon.com/signin/latest/userguide/introduction-to-root-user-sign-in-tutorial.html), we removed the ability to sign in to Amazon Route 53 using the account's root user credentials.
