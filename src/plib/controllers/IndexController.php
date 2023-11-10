@@ -148,10 +148,8 @@ class IndexController extends pm_Controller_Action
         if (!$this->getRequest()->isPost()) {
             throw new pm_Exception('Permission denied');
         }
-        // Workaround with internal classes because pm_ApiCli is not supported outside of CLI
-        require_once('api-common/cuDns.php');
-        $cu = new cuDNS();
-        $cu->syncAllZones();
+
+        pm_ApiCli::call('dns', ['--sync-all-zones']);
 
         $this->_status->addMessage('info', $this->lmsg('syncAllDone'));
         $this->_redirect('index/tools');
