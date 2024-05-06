@@ -1,3 +1,7 @@
+# 2.9.4
+
+* [-] The "PHP Deprecated Construction: Creation of dynamic property PleskRoute53\GuzzleHttp\Handler\CurlMultiHandler::$_mh is deprecated" error no longer appears in %plesk_dir%\admin\logs\php_error.log in Plesk for Windows. (EXTPLESK-5505)
+
 # 2.9.3
 
 * [*] Internal improvements.
