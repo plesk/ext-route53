@@ -1,3 +1,7 @@
+# 2.9.5
+
+* [-] When a TTL value of a domain\'s DNS record is changed in Plesk, the corresponding record in Amazon Route53 is once again updated correctly. (EXTPLESK-2645)
+
 # 2.9.4
 
 * [-] The "PHP Deprecated Construction: Creation of dynamic property PleskRoute53\GuzzleHttp\Handler\CurlMultiHandler::$_mh is deprecated" error no longer appears in /var/log/plesk/panel.log in Plesk for Linux and in %plesk_dir%\admin\logs\php_error.log in Plesk for Windows. (EXTPLESK-5505)

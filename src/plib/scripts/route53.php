@@ -151,7 +151,7 @@ foreach ($data as $record) {
                         'ResourceRecordSet' => array(
                             'Name' => $rr->host,
                             'Type' => $rr->type,
-                            'TTL' => $recordsTTL,
+                            'TTL' => (int)($rr->ttl ?? $recordsTTL),
                             'ResourceRecords' => array(),
                         ),
                     );
