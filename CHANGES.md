@@ -1,3 +1,7 @@
+# 2.9.6
+
+* [-] The extension now uses the correct "DelegationSetId" when retrieving the list of hosted zones. (EXTPLESK-6328)
+
 # 2.9.5
 
 * [-] When a TTL value of a domain\'s DNS record is changed in Plesk, the corresponding record in Amazon Route53 is once again updated correctly. (EXTPLESK-2645)
