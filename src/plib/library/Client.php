@@ -127,6 +127,9 @@ class Modules_Route53_Client
         $zones = [];
         $opts = [/* 'MaxItems' => 2 */];
         $prefixLength = strlen(self::CALLER_REFERENCE_PREFIX);
+        if ($delegationSetId = $this->getDelegationSetIdFromSettings()) {
+            $opts['DelegationSetId'] = $delegationSetId;
+        }
         do {
             $model = $this->listHostedZones($opts);
             foreach ($model['HostedZones'] as $zone) {
@@ -154,27 +157,26 @@ class Modules_Route53_Client
         } while ($model['IsTruncated']);
         return $delegationSets;
     }
-	
-	public function getDelegationSetLimit($delegationsSetId)
-	{
-		$apiResponse = $this->__call('getReusableDelegationSetLimit', [[
-			'DelegationSetId' => $delegationsSetId,
-			'Type' => 'MAX_ZONES_BY_REUSABLE_DELEGATION_SET',
-		]]);
-		return (object) [
-			'currentCount' => $apiResponse['Count'],
-			'maxCount' => $apiResponse['Limit']['Value'],
-		];
-	}
+
+    public function getDelegationSetLimit($delegationsSetId)
+    {
+        $apiResponse = $this->__call('getReusableDelegationSetLimit', [[
+            'DelegationSetId' => $delegationsSetId,
+            'Type' => 'MAX_ZONES_BY_REUSABLE_DELEGATION_SET',
+        ]]);
+        return (object) [
+            'currentCount' => $apiResponse['Count'],
+            'maxCount' => $apiResponse['Limit']['Value'],
+        ];
+    }
 
     public function createHostedZone(array $args = [])
     {
         if (!isset($args['CallerReference'])) {
             $args['CallerReference'] = self::CALLER_REFERENCE_PREFIX . uniqid();
         }
-        if ($delegationSetId = pm_Settings::get('delegationSet')) {
-            // Workaround for Route53Client::cleanId
-            $args['DelegationSetId'] = str_replace('/delegationset/', '', $delegationSetId);
+        if ($delegationSetId = $this->getDelegationSetIdFromSettings()) {
+            $args['DelegationSetId'] = $delegationSetId;
         }
         $model = $this->__call('createHostedZone', [$args]);
         if (is_array($this->_zones)) {
@@ -284,5 +286,18 @@ class Modules_Route53_Client
         }
 
         return new self(new \Aws\Route53\Route53Client($config));
+    }
+
+    /**
+     * @return string|null
+     */
+    private function getDelegationSetIdFromSettings(): ?string
+    {
+        $delegationSetId = pm_Settings::get('delegationSet');
+        if ($delegationSetId) {
+            // Workaround for Route53Client::cleanId
+            return str_replace('/delegationset/', '', $delegationSetId);
+        }
+        return null;
     }
 }
