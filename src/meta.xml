@@ -7,7 +7,7 @@
   <category>dns</category>
   <category>clouds</category>
   <version>2.9.6</version>
-  <release>{{RELEASE}}</release>
+  <release>5</release>
   <vendor>Plesk</vendor>
   <url>https://github.com/plesk/ext-route53</url>
   <plesk_min_version>18.0.40</plesk_min_version>
