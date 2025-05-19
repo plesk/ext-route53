@@ -1,4 +1,8 @@
-# 2.9.6
+# 2.9.8 (19 May 2025)
+
+* [*] Internal improvements.
+
+# 2.9.6 (16 May 2025)
 
 * [-] The extension now uses the correct "DelegationSetId" when retrieving the list of hosted zones. (EXTPLESK-6328)
 
