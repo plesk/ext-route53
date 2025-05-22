@@ -1,3 +1,7 @@
+# 2.9.9 (22 May 2025)
+
+* [*] Added support for PHP 8.4 to ensure compatibility with future Plesk releases.
+
 # 2.9.8 (19 May 2025)
 
 * [*] Internal improvements.
