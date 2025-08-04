@@ -18,7 +18,7 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
         if (!empty($options['isConsole'])) {
             $this->isConsole = $options['isConsole'];
         }
-
+        $this->addPrefixPath('Modules_Route53_Form_Element_', __DIR__ . '/Element/', static::ELEMENT);
         parent::__construct($options);
     }
 
@@ -38,11 +38,12 @@ class Modules_Route53_Form_Settings extends pm_Form_Simple
                 array('NotEmpty', true),
             ),
         ));
-        $this->addElement('text', 'secret', array(
+        $this->addElement('StyledPassword', 'secret', array(
             'label' => pm_Locale::lmsg('secretLabel'),
             'value' => pm_Settings::get('secret'),
             'class' => 'f-large-size',
             'required' => true,
+            'renderPassword' => true,
             'validators' => array(
                 array('NotEmpty', true),
             ),
