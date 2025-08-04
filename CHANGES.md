@@ -1,3 +1,7 @@
+# 2.9.10 (8 Oct 2025)
+
+* [-] Fixed the issue where the data in the "Secret" on the extension's page in Plesk was not masked. (EXTPLESK-9087)
+
 # 2.9.9 (22 May 2025)
 
 * [*] Added support for PHP 8.4 to ensure compatibility with future Plesk releases.
