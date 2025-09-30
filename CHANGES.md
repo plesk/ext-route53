@@ -1,3 +1,7 @@
+# 2.9.10 (6 Oct 2025)
+
+* [-] The secret field in the authorization form is now masked. (SEC-69285)
+
 # 2.9.9 (22 May 2025)
 
 * [*] Added support for PHP 8.4 to ensure compatibility with future Plesk releases.
