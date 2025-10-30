@@ -5,7 +5,7 @@ class Modules_Route53_Exception extends pm_Exception
 {
     public $awsCode = null;
 
-    public function __construct($message, $command, $context = [], Exception $previous = null)
+    public function __construct($message, $command, $context = [], ?Exception $previous = null)
     {
         if (isset($context['code'])) {
             $this->awsCode = $context['code'];

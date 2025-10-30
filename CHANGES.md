@@ -1,3 +1,7 @@
+# 2.9.11 (6 November 2025)
+
+* [*] Security improvements.
+
 # 2.9.10 (8 Oct 2025)
 
 * [*] Security improvements.
