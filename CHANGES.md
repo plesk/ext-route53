@@ -1,4 +1,4 @@
-# 2.9.11 (6 November 2025)
+# 2.9.11 (19 February 2026)
 
 * [*] Security improvements.
 
