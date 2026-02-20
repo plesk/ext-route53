@@ -1,3 +1,7 @@
+# 2.9.12 (20 February 2026)
+
+* [-] Fixed the "Class "PleskRoute53\GuzzleHttp\Psr7\Utils" not found" error. (EXTPLESK-13525)
+
 # 2.9.11 (19 February 2026)
 
 * [*] Security improvements.
