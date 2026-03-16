@@ -78,14 +78,14 @@ $log = new Modules_Route53_Logger();
 
 foreach ($data as $record) {
 
-    $zoneName = $record->zone->name;
-    $recordsTTL = $record->zone->soa->ttl;
     switch ($record->command) {
         /**
          * Zone created or updated
          */
         case 'create':
         case 'update':
+            $zoneName = $record->zone->name;
+            $recordsTTL = $record->zone->soa->ttl;
             //AWS Route 53 does not use uppercase letters
             $zoneId = $client->getZoneId(strtolower($zoneName));
 
@@ -235,6 +235,8 @@ foreach ($data as $record) {
             break;
 
         case 'delete':
+            $zoneName = $record->zone->name;
+            $recordsTTL = $record->zone->soa->ttl;
             //AWS Route 53 does not use uppercase letters
             $zoneId = $client->getZoneId(strtolower($zoneName));
 
