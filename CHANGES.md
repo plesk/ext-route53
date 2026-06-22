@@ -1,3 +1,7 @@
+# 2.9.13 (22 June 2026)
+
+* [-] Fixed the "Undefined property: stdClass::$zone" error logged when synchronizing zones. (EXTPLESK-10078)
+
 # 2.9.12 (20 February 2026)
 
 * [-] Fixed the "Class "PleskRoute53\GuzzleHttp\Psr7\Utils" not found" error. (EXTPLESK-13525)
